@@ -1,0 +1,23 @@
+%D \module
+%D   [      file=t-gantt,
+%D        version=2011.09.11,
+%D          title=\CONTEXT\ Module,
+%D       subtitle=Gantt Module,
+%D         author=Adam Reviczky,
+%D           date=\currentdate,
+%D      copyright=Adam Reviczky,
+%D        license=Public Domain]
+
+\writestatus{loading}{module gantt}
+
+\startmodule[gantt]
+
+\unprotect
+\setupmodule[style=]
+
+\doifdefinedelse{\currentmoduleparameter\c!style}
+  {\usemodule[gantt-s][mp]}
+  {\usemodule[gantt-s][\currentmoduleparameter\c!style]}
+
+\protect
+\stopmodule
