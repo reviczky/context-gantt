@@ -52,8 +52,8 @@
 \setupgantt
         [sf=1,
          xunitlength=1cm,
-         fontsize=\tf,
-         titlefontsize=\tfx,
+         style=\tf,
+         titlestyle=\tfx,
          drawledgerline=false]
 
 \def\setupganttbar
@@ -75,15 +75,15 @@
 % The optional argument [...] can be filled in a key=value syntax, using one or more of the following keys:
 %
 % xunitlength - length of one time slot (default: 1cm)
-% fontsize - fontsize of labels (default: \tf)
-% titlefontsize - fontsize of title section (default: \tfx)
+% style - style of labels (default: \tf)
+% titlestyle - style of title section (default: \tfx)
 % drawledgerline  - Switch to enable/disable the drawing of horizontal ledger lines (default value: false)
 \long\def\dostartgantt[#1]#2#3%
   {\getparameters[\??gantt][#1]%
    \gdef\v!sf{\@@ganttsf}
    \gdef\v!ganttunitlength{\@@ganttxunitlength}
-   \gdef\v!fontsize{\getvalue{@@ganttfontsize}}
-   \gdef\v!titlefontsize{\getvalue{@@gantttitlefontsize}}
+   \gdef\v!style{\getvalue{@@ganttstyle}}
+   \gdef\v!titlestyle{\getvalue{@@gantttitlestyle}}
    \gdef\v!drawledgerline{\@@ganttdrawledgerline}
 
    \bgroup
@@ -149,7 +149,7 @@
    \startMPdrawing
      draw (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\v!ganttunitlength,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\v!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm)--(\the\ganttlastx,0.5cm-0.6cm-\the\!!row*cm)--cycle;
      path diam; diam = (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\v!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm);
-     label (btex \getvalue{v!titlefontsize} #1 etex, center diam);
+     label (btex \getvalue{v!titlestyle} #1 etex, center diam);
    \stopMPdrawing
 
    \ganttlastx=\dimexpr\ganttlastx+\v!ganttunitlength*#2\relax
@@ -192,7 +192,7 @@
    }
    \startMPdrawing
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{v!fontsize} #2 etex, center diag);
+     label.lft (btex \getvalue{v!style} #2 etex, center diag);
      path f; f := (\the\gantttmpa,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.5cm)--(\the\gantttmpa,\ganttnum*cm+0.5cm)--cycle;
 
      hatchoptions(withcolor \v!color);
@@ -281,7 +281,7 @@
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{v!fontsize}\bf #1 etex, center diag); 
+     label.lft (btex \getvalue{v!style}\bf #1 etex, center diag); 
      fill (\the\gantttmpa-0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.4cm)--(\the\gantttmpa-0.14*cm,\ganttnum*cm+0.4cm)--cycle withcolor black;
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpa+0.01cm,\ganttnum*cm+0.2cm) withcolor black;
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb-0.01cm,\ganttnum*cm+0.2cm) withcolor black;
@@ -317,7 +317,7 @@
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{v!fontsize} #2 etex, center diag);
+     label.lft (btex \getvalue{v!style} #2 etex, center diag);
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb,\ganttnum*cm+0.3cm) withcolor \v!color;
    \stopMPdrawing
 
