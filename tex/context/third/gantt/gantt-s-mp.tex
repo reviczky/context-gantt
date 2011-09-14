@@ -47,13 +47,13 @@
 
 \def\dosetupgantt[#1]%
         {\egroup
-         \getparameters[\??gantt][#1]}
+         \getparameters[\????gantt][#1]}
 
 \setupgantt
         [sf=1,
          xunitlength=1cm,
-         fontsize=\tf,
-         titlefontsize=\tfx,
+         style=\tf,
+         titlestyle=\tfx,
          drawledgerline=false]
 
 \def\setupganttbar
@@ -64,7 +64,7 @@
 
 \def\dosetupganttbar[#1]%
         {\egroup
-         \getparameters[\??gantt][#1]}
+         \getparameters[\????gantt][#1]}
 
 \setupganttbar
         [pattern=north east lines,
@@ -75,16 +75,16 @@
 % The optional argument [...] can be filled in a key=value syntax, using one or more of the following keys:
 %
 % xunitlength - length of one time slot (default: 1cm)
-% fontsize - fontsize of labels (default: \tf)
-% titlefontsize - fontsize of title section (default: \tfx)
+% style - style of labels (default: \tf)
+% titlestyle - style of title section (default: \tfx)
 % drawledgerline  - Switch to enable/disable the drawing of horizontal ledger lines (default value: false)
 \long\def\dostartgantt[#1]#2#3%
-  {\getparameters[\??gantt][#1]%
-   \gdef\v!sf{\@@ganttsf}
-   \gdef\v!ganttunitlength{\@@ganttxunitlength}
-   \gdef\v!fontsize{\getvalue{@@ganttfontsize}}
-   \gdef\v!titlefontsize{\getvalue{@@gantttitlefontsize}}
-   \gdef\v!drawledgerline{\@@ganttdrawledgerline}
+  {\getparameters[\????gantt][#1]%
+   \gdef\gantt!sf{\@@@@ganttsf}
+   \gdef\gantt!ganttunitlength{\@@@@ganttxunitlength}
+   \gdef\gantt!style{\getvalue{@@ganttstyle}}
+   \gdef\gantt!titlestyle{\getvalue{@@gantttitlestyle}}
+   \gdef\gantt!drawledgerline{\@@@@ganttdrawledgerline}
 
    \bgroup
    \newcount\ganttx \ganttx=0
@@ -104,13 +104,13 @@
      linejoin := mitered;
 
      draw (0,0.5cm)--(0,1.4cm-\the\ganttheight*cm);
-     draw (\the\ganttwidth*\v!ganttunitlength,0.5cm)--(\the\ganttwidth*\v!ganttunitlength,1.4cm-\the\ganttheight*cm);
+     draw (\the\ganttwidth*\gantt!ganttunitlength,0.5cm)--(\the\ganttwidth*\gantt!ganttunitlength,1.4cm-\the\ganttheight*cm);
      % draw x axis
-     draw (0cm,-#2*cm+0.4cm)--(\the\ganttwidth*\v!ganttunitlength,-#2*cm+0.4cm);
+     draw (0cm,-#2*cm+0.4cm)--(\the\ganttwidth*\gantt!ganttunitlength,-#2*cm+0.4cm);
 
      % draw grid
      for t=1 upto \the\ganttwidth:
-       draw (\v!ganttunitlength*t,-0.5cm)--(\v!ganttunitlength*t,1.4cm-\the\ganttheight*cm) dashed withdots;
+       draw (\gantt!ganttunitlength*t,-0.5cm)--(\gantt!ganttunitlength*t,1.4cm-\the\ganttheight*cm) dashed withdots;
      endfor
    \stopMPdrawing
    \egroup
@@ -123,7 +123,7 @@
   {\startMPdrawing
      % debug
      % draw bbox currentpicture withcolor .625red;
-     currentpicture := currentpicture scaled \v!sf;
+     currentpicture := currentpicture scaled \gantt!sf;
    \stopMPdrawing
    \MPdrawingdonetrue\getMPdrawing
    \resetMPdrawing
@@ -143,16 +143,16 @@
 % \titleelement draws one element of the title
 % usage: \titleelement{label}{length}
 \long\def\dotitleelement#1#2%
-  {\gantttmpa=\dimexpr\v!ganttunitlength*#2\relax
+  {\gantttmpa=\dimexpr\gantt!ganttunitlength*#2\relax
    \divide\gantttmpa by 2
 
    \startMPdrawing
-     draw (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\v!ganttunitlength,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\v!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm)--(\the\ganttlastx,0.5cm-0.6cm-\the\!!row*cm)--cycle;
-     path diam; diam = (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\v!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm);
-     label (btex \getvalue{v!titlefontsize} #1 etex, center diam);
+     draw (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\gantt!ganttunitlength,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\gantt!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm)--(\the\ganttlastx,0.5cm-0.6cm-\the\!!row*cm)--cycle;
+     path diam; diam = (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\gantt!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm);
+     label (btex \getvalue{v!titlestyle} #1 etex, center diam);
    \stopMPdrawing
 
-   \ganttlastx=\dimexpr\ganttlastx+\v!ganttunitlength*#2\relax
+   \ganttlastx=\dimexpr\ganttlastx+\gantt!ganttunitlength*#2\relax
   }
 
 \def\titleelement%
@@ -178,24 +178,24 @@
 % color - a color of the pattern (e.g. red, green blue gray, dark gray)
 \long\def\doganttbar[#1]#2#3#4%
   {\bgroup
-   \getparameters[\??gantt][#1]%
-   \edef\v!pattern{\@@ganttpattern}
-   \edef\v!color{\@@ganttcolor}
+   \getparameters[\????gantt][#1]%
+   \edef\gantt!pattern{\@@@@ganttpattern}
+   \edef\gantt!color{\@@@@ganttcolor}
 
-   \gantttmpa=\dimexpr\v!ganttunitlength*#3\relax
-   \gantttmpb=\dimexpr\v!ganttunitlength*#4+\gantttmpa\relax
+   \gantttmpa=\dimexpr\gantt!ganttunitlength*#3\relax
+   \gantttmpb=\dimexpr\gantt!ganttunitlength*#4+\gantttmpa\relax
 
-   \doif{\v!drawledgerline}{true}{
+   \doif{\gantt!drawledgerline}{true}{
    \startMPdrawing
-     draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\v!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
+     draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
    \stopMPdrawing
    }
    \startMPdrawing
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{v!fontsize} #2 etex, center diag);
+     label.lft (btex \getvalue{v!style} #2 etex, center diag);
      path f; f := (\the\gantttmpa,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.5cm)--(\the\gantttmpa,\ganttnum*cm+0.5cm)--cycle;
 
-     hatchoptions(withcolor \v!color);
+     hatchoptions(withcolor \gantt!color);
      draw f withcolor black;
      % workaround for transparent bug
      % hatchfill f withcolor transparent("normal",0,white) withcolor (45,1mm,-0.5bp);
@@ -219,7 +219,7 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (#1*\v!ganttunitlength,-#2*cm+0.1cm+0.2cm)--(#1*\v!ganttunitlength+0.4*\v!ganttunitlength,-#2*cm+0.1*cm+0.2*cm)--(#1*\v!ganttunitlength+0.4*\v!ganttunitlength,-#2*cm-0.4*cm+0.2*cm)--(#1*\v!ganttunitlength-0.4*\v!ganttunitlength,-#2*cm-0.4*cm+0.2*cm)--(#1*\v!ganttunitlength-0.4*\v!ganttunitlength,-#4*cm+0.1*cm+0.2*cm)--(#3*\v!ganttunitlength,-#4*cm+0.1*cm+0.2*cm);
+       drawarrow (#1*\gantt!ganttunitlength,-#2*cm+0.1cm+0.2cm)--(#1*\gantt!ganttunitlength+0.4*\gantt!ganttunitlength,-#2*cm+0.1*cm+0.2*cm)--(#1*\gantt!ganttunitlength+0.4*\gantt!ganttunitlength,-#2*cm-0.4*cm+0.2*cm)--(#1*\gantt!ganttunitlength-0.4*\gantt!ganttunitlength,-#2*cm-0.4*cm+0.2*cm)--(#1*\gantt!ganttunitlength-0.4*\gantt!ganttunitlength,-#4*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,-#4*cm+0.1*cm+0.2*cm);
      endgroup;
    \stopMPdrawing
    \egroup
@@ -234,18 +234,18 @@
 % where the optional pattern argument are the same as for \ganttbar
 \long\def\doganttbarcon[#1]#2#3#4%
   {\bgroup
-   \getparameters[\??gantt][#1]%
-   \edef\v!pattern{\@@ganttpattern}
-   \edef\v!color{\@@ganttcolor}
+   \getparameters[\????gantt][#1]%
+   \edef\gantt!pattern{\@@@@ganttpattern}
+   \edef\gantt!color{\@@@@ganttcolor}
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
-   \ifdim\nextganttlastx>\dimexpr\v!ganttunitlength*#3\relax
+   \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
      \startMPdrawing
      begingroup;
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\v!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\v!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\v!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \else
@@ -254,7 +254,7 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\v!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \fi
@@ -270,18 +270,18 @@
 % usage: \ganttgroup{label}{start}{length}
 \long\def\doganttgroup#1#2#3%
   {\bgroup
-   \gantttmpa=\dimexpr\v!ganttunitlength*#2\relax
-   \gantttmpb=\dimexpr\v!ganttunitlength*#3+\gantttmpa\relax
+   \gantttmpa=\dimexpr\gantt!ganttunitlength*#2\relax
+   \gantttmpb=\dimexpr\gantt!ganttunitlength*#3+\gantttmpa\relax
 
-   \doif{\v!drawledgerline}{true}{
+   \doif{\gantt!drawledgerline}{true}{
      \startMPdrawing
-       draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\v!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
+       draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
      \stopMPdrawing
    }
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{v!fontsize}\bf #1 etex, center diag); 
+     label.lft (btex \getvalue{v!style}\bf #1 etex, center diag); 
      fill (\the\gantttmpa-0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.4cm)--(\the\gantttmpa-0.14*cm,\ganttnum*cm+0.4cm)--cycle withcolor black;
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpa+0.01cm,\ganttnum*cm+0.2cm) withcolor black;
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb-0.01cm,\ganttnum*cm+0.2cm) withcolor black;
@@ -303,22 +303,22 @@
 % Declaring layers to abvoid superposition when you connect a \ganttmileston with a task
 \long\def\doganttmilestone[#1]#2#3%
   {\bgroup
-   \getparameters[\??gantt][#1]%
-   \edef\v!color{\@@ganttcolor}
+   \getparameters[\????gantt][#1]%
+   \edef\gantt!color{\@@@@ganttcolor}
 
-   \gantttmpa=\dimexpr\v!ganttunitlength*#3\relax
-   \gantttmpb=\dimexpr\v!ganttunitlength*0+\gantttmpa\relax
+   \gantttmpa=\dimexpr\gantt!ganttunitlength*#3\relax
+   \gantttmpb=\dimexpr\gantt!ganttunitlength*0+\gantttmpa\relax
 
-   \doif{\v!drawledgerline}{true}{
+   \doif{\gantt!drawledgerline}{true}{
      \startMPdrawing
-       draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\v!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
+       draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
      \stopMPdrawing
    }
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{v!fontsize} #2 etex, center diag);
-     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb,\ganttnum*cm+0.3cm) withcolor \v!color;
+     label.lft (btex \getvalue{v!style} #2 etex, center diag);
+     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb,\ganttnum*cm+0.3cm) withcolor \gantt!color;
    \stopMPdrawing
 
    \global\ganttlastx=\gantttmpb
@@ -334,17 +334,17 @@
 % where the optional color argument are the same as for \ganttbar and \ganttmilestone
 \long\def\doganttmilestonecon[#1]#2#3%
   {\bgroup
-   \getparameters[\??gantt][#1]%
-   \edef\v!color{\@@ganttcolor}
+   \getparameters[\????gantt][#1]%
+   \edef\gantt!color{\@@@@ganttcolor}
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
-   \ifdim\nextganttlastx>\dimexpr\v!ganttunitlength*#3\relax
+   \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
      \startMPdrawing
      begingroup;
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\v!ganttunitlength-0.14*cm,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\v!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\v!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \else
@@ -353,7 +353,7 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\v!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\v!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \fi

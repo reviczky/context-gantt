@@ -13,11 +13,11 @@
 \startmodule[gantt]
 
 \unprotect
-\setupmodule[style=]
+\setupmodule[\c!alternative=]
 
-\doifdefinedelse{\currentmoduleparameter\c!style}
+\doifdefinedelse{\currentmoduleparameter\c!alternative}
   {\usemodule[gantt-s][mp]}
-  {\usemodule[gantt-s][\currentmoduleparameter\c!style]}
+  {\usemodule[gantt-s][\currentmoduleparameter\c!alternative]}
 
 \protect
 \stopmodule
