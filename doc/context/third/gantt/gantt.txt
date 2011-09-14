@@ -2,8 +2,8 @@ Gantt is a (third party) ConTeXt module for drawing Gantt charts via MetaPost or
 
 == Description ==
 To switch between the two drawing engines (MetaPost and TikZ) use the style option.
-\usemodule[gantt][style=mp]
-\usemodule[gantt][style=tikz]
+\usemodule[gantt][alternative=mp]
+\usemodule[gantt][alternative=tikz]
 The default engine is MetaPost.
 
 Here is a short description of the environments and commands:
@@ -14,8 +14,8 @@ The gantt environment draws the canvas of a gantt figure.
 The optional argument […] can be filled in a key=value syntax, using one or more of the following keys:
 * sf - MetaPost scale factor (default: 1)
 * xunitlength - length of one time slot (default: 1cm)
-* fontsize - fontsize of labels (default: \tf)
-* titlefontsize - fontsize of title section (default: \tfx)
+* style - fontsize of labels (default: \tf)
+* titlestyle - fontsize of title section (default: \tfx)
 * drawledgerline - switch to enable/disable the drawing of horizontal ledger lines (default value: false)
 
 === Ganttitle ===

@@ -1,12 +1,12 @@
 \usemodule[gantt]
-%\usemodule[gantt][style=mp]
-%\usemodule[gantt][style=tikz]
+%\usemodule[gantt][alternative=mp]
+%\usemodule[gantt][alternative=tikz]
 \setuppapersize[landscape][landscape]
 \setuplayout[scale=0.8]
 \setuppagenumbering[location=]
 
 \starttext
-  \startgantt[xunitlength=0.5cm,fontsize=\tfx,titlefontsize=\tfx,drawledgerline=true]{10}{48}
+  \startgantt[xunitlength=0.5cm,style=\tfx,titlestyle=\tfx,drawledgerline=true]{10}{48}
     \startganttitle
       \titleelement{2009}{7}
       \numtitle{2010}{1}{2012}{12}
