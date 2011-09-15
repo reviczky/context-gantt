@@ -50,7 +50,7 @@
          \getparameters[\????gantt][#1]}
 
 \setupgantt
-        [sf=1,
+        [factor=1,
          xunitlength=1cm,
          style=\tf,
          titlestyle=\tfx,
@@ -80,7 +80,7 @@
 % drawledgerline  - Switch to enable/disable the drawing of horizontal ledger lines (default value: false)
 \long\def\dostartgantt[#1]#2#3%
   {\getparameters[\????gantt][#1]%
-   \gdef\gantt!sf{\@@@@ganttsf}
+   \gdef\gantt!factor{\@@@@ganttfactor}
    \gdef\gantt!ganttunitlength{\@@@@ganttxunitlength}
    \gdef\gantt!style{\getvalue{@@ganttstyle}}
    \gdef\gantt!titlestyle{\getvalue{@@gantttitlestyle}}
@@ -123,7 +123,7 @@
   {\startMPdrawing
      % debug
      % draw bbox currentpicture withcolor .625red;
-     currentpicture := currentpicture scaled \gantt!sf;
+     currentpicture := currentpicture scaled \gantt!factor;
    \stopMPdrawing
    \MPdrawingdonetrue\getMPdrawing
    \resetMPdrawing
