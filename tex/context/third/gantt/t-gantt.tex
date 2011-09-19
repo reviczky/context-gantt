@@ -16,8 +16,8 @@
 \setupmodule[\c!alternative=]
 
 \doifdefinedelse{\currentmoduleparameter\c!alternative}
-  {\usemodule[gantt-s][mp]}
-  {\usemodule[gantt-s][\currentmoduleparameter\c!alternative]}
+  {\usemodule[gantt-s-mp]}
+  {\usemodule[gantt-s-\currentmoduleparameter\c!alternative]}
 
 \protect
 \stopmodule
