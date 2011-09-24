@@ -1,0 +1,42 @@
+%D \module
+%D   [     file=t-gantt,
+%D      version=2011.09.24,
+%D        title=\CONTEXT\ User Module,
+%D     subtitle=Drawing Gantt charts,
+%D       author={Adam Reviczky and Aditya Mahajan},
+%D         date=\currentdate,
+%D    copyright={Adam Reviczky and Aditya Mahajan},
+%D      license=Public Domain]
+
+\writestatus{loading}{Gantt charts / MetaPost backend (ver: 2011.09.24)}
+
+\startmodule[gantt-s-mp]
+\unprotect
+
+\definenamespace
+  [gantt]
+  [
+    \c!type=module,
+    \c!comment=Gantt Module,
+    \c!name=gantt,
+    \c!style=\v!yes,
+    \c!command=\v!yes,
+    \c!setup=\v!list,
+    \c!parent=gantt,
+  ]
+
+
+\setupgantt
+  [
+    \c!factor=1000,
+    \c!x=1cm,
+    \c!style=\v!normal,
+    \c!color=,
+    \c!titlestyle=\v!small,
+    \c!titlecolor=,
+    ledger=\v!off,
+  ]
+
+
+\protect
+\stopmodule
