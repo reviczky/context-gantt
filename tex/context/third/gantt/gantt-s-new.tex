@@ -113,14 +113,15 @@
         withcolor \MPcolor{\gantttaskparameter{fillcolor}} ;
 
      %% Draw float
-     draw unitsquare %
-        xyscaled (\gantttaskparameter{float}*\gantttaskparameter\c!x,
-                  ypart gantt_bar_size) %
-        shifted (gantt_bar_shift + (xpart gantt_bar_size, 0)) %
-        withpen pencircle scaled \gantttaskparameter{floatthickness} %
-        \gantttaskparameter{floatstyle} %
-        withcolor \MPcolor{\gantttaskparameter{floatcolor}} ;
-
+     if \gantttaskparameter{float} <> 0 :
+           draw unitsquare %
+              xyscaled (\gantttaskparameter{float}*\gantttaskparameter\c!x,
+                        ypart gantt_bar_size) %
+              shifted (gantt_bar_shift + (xpart gantt_bar_size, 0)) %
+              withpen pencircle scaled \gantttaskparameter{floatthickness} %
+              \gantttaskparameter{floatstyle} %
+              withcolor \MPcolor{\gantttaskparameter{floatcolor}} ;
+     fi ;
      %% Draw the whole task
      stripe_angle := 45 ;
      stripe_gap   := \gantttaskparameter\c!y / 5 ;
