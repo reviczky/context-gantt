@@ -21,7 +21,6 @@
     \c!type=module,
     \c!name=ganttchart,
     setup=\v!yes,
-    \s!parent=ganttchart,
   ]
 
 \definenamespace
@@ -31,7 +30,6 @@
     \c!name=gantttask,
     \c!command=\v!yes,
     setup=\v!list,
-    \s!parent=ganttchart,
   ]
 
 \newtoks \everydefinegantttask
@@ -46,7 +44,7 @@
 \stoptexdefinition
 
 \starttexdefinition redodefinegantttask [#1][#2][#3]
-    \definegantttask[#2][\c!alternative=#1, #3]
+    \definegantttask[#2][\s!parent=\????gantttask,\c!alternative=#1, #3]
 \stoptexdefinition
 
 \install_gantt_task_handler \define_gantt_task      {task}
@@ -79,6 +77,83 @@
     \endgroup
 \stoptexdefinition
 
+\newcount\gantt_task_count
+
+\starttexdefinition initialize_gantt_chart_display
+   \gantt_task_count=0
+   \resetMPdrawing
+   \startMPdrawing
+     save gantt_bar_size, gantt_bar_shift ;
+     pair gantt_bar_size, gantt_bar_shift ;
+
+   \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition add_gantt_chart_task #1
+  \increment\gantt_task_count 
+  \edef\currentgantttask{#1}
+  \getvalue{gantt_draw_\gantttaskparameter\c!alternative}{#1}
+\stoptexdefinition
+
+\starttexdefinition gantt_draw_task #1
+  \startMPdrawing
+     gantt_bar_size := 
+        ( (\gantttaskparameter\c!stop - \gantttaskparameter\c!start)*\gantttaskparameter\c!x,
+          0.6*\gantttaskparameter\c!y ) ;
+
+     gantt_bar_shift :=
+        ( \gantttaskparameter\c!start * \gantttaskparameter\c!x, 
+         -\gantt_task_count * \gantttaskparameter\c!y ) ;
+
+     %% Draw the completed task
+     fill unitsquare %
+        xyscaled (xpart gantt_bar_size * \gantttaskparameter{completed},
+                  ypart gantt_bar_size) %
+        shifted  gantt_bar_shift %
+        withcolor \MPcolor{\gantttaskparameter{fillcolor}} ;
+
+     %% Draw float
+     draw unitsquare %
+        xyscaled (\gantttaskparameter{float}*\gantttaskparameter\c!x,
+                  ypart gantt_bar_size) %
+        shifted (gantt_bar_shift + (xpart gantt_bar_size, 0)) %
+        withpen pencircle scaled \gantttaskparameter{floatthickness} %
+        \gantttaskparameter{floatstyle} %
+        withcolor \MPcolor{\gantttaskparameter{floatcolor}} ;
+
+     %% Draw the whole task
+     stripe_angle := 45 ;
+     stripe_gap   := \gantttaskparameter\c!y / 5 ;
+     stripe_path_a (withpen pencircle scaled \gantttaskparameter{stripethickness} withcolor \MPcolor{\gantttaskparameter{stripecolor}})
+                   (draw)
+      unitsquare % 
+        xyscaled gantt_bar_size  %
+        shifted  gantt_bar_shift %
+        withpen pencircle scaled \gantttaskparameter{barthickness} %
+        withcolor \MPcolor{\gantttaskparameter{barcolor}}
+        ;
+  \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition gantt_draw_milestone #1
+   \startMPdrawing
+      fill \gantttaskparameter{milestoneshape} %
+           xyscaled (0.6*\gantttaskparameter\c!y, 0.6*\gantttaskparameter\c!y) %
+           shifted  ( \gantttaskparameter\c!start * \gantttaskparameter\c!x,
+                     -\gantt_task_count * \gantttaskparameter\c!y ) %
+           withcolor \MPcolor{\gantttaskparameter{milestonecolor}} ;
+   \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition show_gantt_chart_display
+   \startMPdrawing
+      %% Placeholder
+   \stopMPdrawing
+   \MPdrawingdonetrue\getMPdrawing
+   \resetMPdrawing
+\stoptexdefinition
+
+\startmode[gantt-table] % Useful for debugging
 %% Temporary method to show a gantt chart as a table
 %% Will work on display as a metapost graphic
 
@@ -108,19 +183,44 @@
       \the\ganttchartdisplay
     \stopTABLE
 \stoptexdefinition
-
+\stopmode
 
 \setupganttchart
   [
-    \c!factor=1000,
-    \c!x=1cm,
-    \c!y=1em,
+    % \c!factor=1000, %Not sure why this is needed
     \c!style=\v!normal,
     \c!color=,
     \c!titlestyle=\v!small,
     \c!titlecolor=,
-    ledger=\v!off,
+    \c!grid=\v!off, % \v!on, \v!horizontal, \v!vertical, \v!both
     \c!setups=,
+  ]
+
+\setupgantttask
+  [
+    \c!color=red,
+    linewidth=1pt,
+    % Don't change these
+    completed=0, % From 0 to 1
+    float=0,
+    % Stripe
+    stripethickness=0.5pt,
+    stripecolor=lightblue,
+    % Bar
+    barthickness=1pt,
+    barcolor=blue,
+    % Fill
+    fillcolor=blue,
+    % Float
+    floatcolor=darkgray,
+    floatthickness=1pt,
+    floatstyle={dashed evenly},
+    % Mileston
+    milestonecolor=green,
+    milestoneshape=fulldiamond,
+    % Dimensions
+    \c!x=1cm,       
+    \c!y=\the\dimexpr\lineheight\relax,
   ]
 
 
@@ -128,10 +228,11 @@
 \stopmodule
 
 \starttext
+\loggingall
 \startganttchart
-  \task      [one]      [text={Task one}, start=1, stop=10, float=3]
-  \task      [two]      [text={Second},   start=8, stop=10]
-  \milestone [finish]   [shape=circle,    start=10]
+  \task      [one]      [text={Task one}, start=0, stop=2, float=1, completed=0.5]
+  \task      [two]      [text={Second},   start=2, stop=8, completed=0.25, fillcolor=green]
+  \milestone [finish]   [shape=circle,    start=3]
 \stopganttchart
 
 \stoptext
