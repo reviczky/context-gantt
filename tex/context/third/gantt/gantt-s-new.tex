@@ -40,16 +40,6 @@
   \appendtocommalist \currentgantttask \current_gantt_tasks
 \to \everydefinegantttask
 
-
-\def\current_gantt_tasks{}
-
-\startsetups ganttchart::setups
-  \def\current_gantt_tasks{}
-
-  \let\task         \define_gantt_task
-  \let\milestone    \define_gantt_milestone
-\stopsetups
-
 \starttexdefinition install_gantt_task_handler #1#2
     %% #1 =  \definegantttask[##1][alternative=#2, ##2]
     \def#1{\dotripleargument\redodefinegantttask[#2]}
@@ -61,6 +51,16 @@
 
 \install_gantt_task_handler \define_gantt_task      {task}
 \install_gantt_task_handler \define_gantt_milestone {milestone}
+
+\def\current_gantt_tasks{}
+
+\startsetups ganttchart::setups
+  \def\current_gantt_tasks{}
+
+  \let\task         \define_gantt_task
+  \let\milestone    \define_gantt_milestone
+\stopsetups
+
 
 \def\startganttchart
     {\dosingleargument\start_gantt_chart_indeed}
