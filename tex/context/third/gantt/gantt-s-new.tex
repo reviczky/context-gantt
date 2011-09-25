@@ -83,7 +83,11 @@
     \writestatus{DEBUG}{\current_gantt_tasks}
     \initialize_gantt_chart_display
     \processcommacommand[\current_gantt_tasks]\initialize_gantt_chart_task
-    \draw_gantt_background
+    \initialize_gantt_chart_background
+    \doifinset{\ganttchartparameter\c!grid}{\v!on,\v!both,\v!horizontal}
+        {\draw_gantt_background_horizontal}
+    \doifinset{\ganttchartparameter\c!grid}{\v!on,\v!both,\v!vertical}
+        {\draw_gantt_background_vertical}
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_connection
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
     \show_gantt_chart_display
@@ -107,6 +111,10 @@
       lft stop 
     fi 
   enddef;
+
+  % This should probabily go somewhere else
+  picture withtightdots ;
+  withtightdots=dashpattern(off 0.5 on 0 off 0.5); % `dashed withtightdots'
 \stopMPinitializations
 
 \newcount\gantt_task_count
@@ -126,19 +134,44 @@
    \stopMPdrawing
 \stoptexdefinition
 
-\starttexdefinition draw_gantt_background
+\starttexdefinition initialize_gantt_chart_background
   \startMPdrawing
-     %% TODO: Check value of grid
-      save gantt_x, gantt_y;
-      path gantt_x, gantt_y;
-      gantt_x := (0,0) -- (\the\gantt_chart_length*\ganttchartparameter\c!x, 0);
-      gantt_y := ((0,0) -- (0, -(\gantt_task_count*\ganttchartparameter\c!y)))
+      save x_gantt, y_gantt;
+      path x_gantt, y_gantt;
+      x_gantt := ((0,0) -- (\the\gantt_chart_length*\ganttchartparameter\c!x, 0)) 
                  shifted (0, -0.5*\ganttchartparameter\c!y) ;
-      for i = 0 upto \gantt_task_count :
-          draw gantt_x shifted (0, -(i+0.5)*\ganttchartparameter\c!y) ;
+      y_gantt := ((0,0) -- (0, -(\gantt_task_count*\ganttchartparameter\c!y)))
+                 shifted (0, -0.5*\ganttchartparameter\c!y) ;
+
+      % Draw the frame
+      draw x_gantt --
+           y_gantt shifted (\the\gantt_chart_length*\ganttchartparameter\c!x,0) --
+           reverse (x_gantt shifted (0,-\gantt_task_count*\ganttchartparameter\c!y)) --
+           reverse (y_gantt) -- cycle %
+           withpen pencircle scaled (\ganttchartparameter\c!rulethickness) %
+           \ganttchartparameter{framestyle} %
+           withcolor \MPcolor{\ganttchartparameter\c!framecolor} ;
+ \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition draw_gantt_background_horizontal
+  \startMPdrawing
+      for i = 1 upto \gantt_task_count - 1:
+          draw x_gantt shifted (0, -i*\ganttchartparameter\c!y) %
+           withpen pencircle scaled (\ganttchartparameter{gridthickness}) %
+           \ganttchartparameter{gridstyle} %
+           withcolor \MPcolor{\ganttchartparameter{gridcolor}} ;
       endfor ;
-      for i = 0 upto \the\gantt_chart_length :
-          draw gantt_y shifted (i*\ganttchartparameter\c!x, 0) ;
+  \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition draw_gantt_background_vertical
+  \startMPdrawing
+      for i = 1 upto \the\gantt_chart_length -1 :
+          draw y_gantt shifted (i*\ganttchartparameter\c!x, 0) %
+           withpen pencircle scaled (\ganttchartparameter{gridthickness}) %
+           \ganttchartparameter{gridstyle} %
+           withcolor \MPcolor{\ganttchartparameter{gridcolor}} ;
       endfor ;
   \stopMPdrawing
 \stoptexdefinition
@@ -172,9 +205,12 @@
      %% we also set the value of \type{\currenttask}. However, the contents of
      %% textext is expanded twice, so we need to ensure that the write string is 
      %% created after the second expansion
+     begingroup ;
+     labeloffset := \ganttchartparameter\c!distance ;
      label.lft (textext("\def\noexpand\letterbackslash currentgantttask{\currentgantttask}
         \dosetgantttaskattributes{\c!style}{\c!color} \gantttaskparameter\c!text"),
-       (-\ganttchartparameter\c!distance, ypart gantt_bar_shift)) ;
+       (0, ypart gantt_bar_shift)) ;
+     endgroup ;
   \stopMPdrawing
 \stoptexdefinition
 
@@ -193,19 +229,20 @@
               xyscaled (\gantttaskparameter{float}*\ganttchartparameter\c!x,
                         ypart gantt_bar_size) %
               shifted (gantt_bar_shift + (xpart gantt_bar_size, 0)) %
-              withpen pencircle scaled \gantttaskparameter{floatthickness} %
+              withpen pencircle scaled (\gantttaskparameter{floatthickness}) %
               \gantttaskparameter{floatstyle} %
               withcolor \MPcolor{\gantttaskparameter{floatcolor}} ;
      fi ;
      %% Draw the whole task
      stripe_angle := 45 ;
      stripe_gap   := \ganttchartparameter\c!y / 5 ;
-     stripe_path_a (withpen pencircle scaled \gantttaskparameter{stripethickness} withcolor \MPcolor{\gantttaskparameter{stripecolor}})
+     stripe_path_a (withpen pencircle scaled (\gantttaskparameter{stripethickness})  \gantttaskparameter{stripestyle} withcolor \MPcolor{\gantttaskparameter{stripecolor}})
                    (draw)
       gantt_square % 
         xyscaled gantt_bar_size  %
         shifted  gantt_bar_shift %
-        withpen pencircle scaled \gantttaskparameter{barthickness} %
+        withpen pencircle scaled (\gantttaskparameter{barthickness}) %
+        \gantttaskparameter{barstyle} %
         withcolor \MPcolor{\gantttaskparameter{barcolor}}
         ;
   \stopMPdrawing
@@ -284,7 +321,15 @@
     \c!setups=,
     \c!x=1cm,       
     \c!y=\the\dimexpr1.5\lineheight\relax,
-    \c!distance=0.5cm,
+    \c!distance=\the\dimexpr0.5em\relax,
+    % Frame
+    \c!framecolor=,
+    \c!rulethickness=1pt,
+    framestyle=,
+    % Grid style
+    gridcolor=darkgray,
+    gridthickness=0.5*\ganttchartparameter\c!rulethickness,
+    gridstyle={dashed withtightdots},
   ]
 
 \setupgantttask
@@ -296,11 +341,13 @@
     completed=0, % From 0 to 1
     float=0,
     % Stripe
-    stripethickness=0.5pt,
+    stripethickness=0.5*\ganttchartparameter\c!rulethickness,
     stripecolor=lightblue,
+    stripestyle=, % dashed withdots
     % Bar
-    barthickness=1pt,
+    barthickness=\ganttchartparameter\c!rulethickness,
     barcolor=blue,
+    barstyle=, %dashed evenly
     % Fill
     fillcolor=blue,
     % Float
@@ -310,6 +357,10 @@
     % Mileston
     milestonecolor=green,
     milestoneshape=fulldiamond,
+    % Connection
+    connectioncolor=,
+    connectionstyle=,
+    connectionthickness=\ganttchartparameter\c!rulethickness,
     % Dimensions
     \c!stop=\gantttaskparameter\c!start,
   ]
@@ -331,7 +382,7 @@
       fillcolor=green,
     ]
 
-\startganttchart[width=\textwidth]
+\startbuffer
   \task [one]
         [text={A task}, start=0, stop=2, float=1, completed=0.5, connection={two}]
   \task [two]
@@ -348,6 +399,17 @@
         [text={another colored task}, start=5, stop=8]
   \task [t6]
         [text={another task}, start=5, stop=6]
+\stopbuffer
+
+\startganttchart[width=\textwidth, grid=on]
+  \getbuffer
 \stopganttchart
 
+\startganttchart[width=\textwidth, grid=horizontal]
+  \getbuffer
+\stopganttchart
+
+\startganttchart[width=\textwidth, grid=vertical]
+  \getbuffer
+\stopganttchart
 \stoptext
