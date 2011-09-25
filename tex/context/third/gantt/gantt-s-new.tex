@@ -199,30 +199,33 @@
 \starttexdefinition add_gantt_chart_connection_indeed #1#2
   \writestatus{DEBUG}{connect: #1 and #2}
   \startMPdrawing
-      drawarrow gantt_connection (
-                 % start
-                 if "\namedgantttaskparameter{#1}\c!alternative" = "task" :
-                     ((\namedgantttaskparameter{#1}\c!stop + 1) *\namedgantttaskparameter{#1}\c!x, 
-                     -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
-                 else :
-                     (\namedgantttaskparameter{#1}\c!start*\namedgantttaskparameter{#1}\c!x +  
-                      0.25*\namedgantttaskparameter{#1}\c!y ,
-                     -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
-                 fi,
-                 % stop
-                 if "\namedgantttaskparameter{#2}\c!alternative" = "task" :
-                     (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x, 
-                     -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
-                 else :
-                     (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x -
-                      0.25*\namedgantttaskparameter{#2}\c!y ,
-                     -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
-                 fi, 
-                 % x 
-                 0.5*\namedgantttaskparameter{#1}\c!x,
-                 % y
-                 0.5*\namedgantttaskparameter{#1}\c!y) ;
-    ;
+     begingroup;
+       interim linecap := squared;
+       interim linejoin := rounded;
+        drawarrow gantt_connection (
+                   % start
+                   if "\namedgantttaskparameter{#1}\c!alternative" = "task" :
+                       ((\namedgantttaskparameter{#1}\c!stop + 1) *\namedgantttaskparameter{#1}\c!x, 
+                       -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
+                   else :
+                       (\namedgantttaskparameter{#1}\c!start*\namedgantttaskparameter{#1}\c!x +  
+                        0.25*\namedgantttaskparameter{#1}\c!y ,
+                       -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
+                   fi,
+                   % stop
+                   if "\namedgantttaskparameter{#2}\c!alternative" = "task" :
+                       (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x, 
+                       -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
+                   else :
+                       (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x -
+                        0.25*\namedgantttaskparameter{#2}\c!y ,
+                       -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
+                   fi, 
+                   % x 
+                   0.5*\namedgantttaskparameter{#1}\c!x,
+                   % y
+                   0.5*\namedgantttaskparameter{#1}\c!y) ;
+     endgroup ;
   \stopMPdrawing
 \stoptexdefinition
 
