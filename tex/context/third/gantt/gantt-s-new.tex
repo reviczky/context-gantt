@@ -136,18 +136,21 @@
 
 \starttexdefinition initialize_gantt_chart_background
   \startMPdrawing
+      save x_gantt_offset, y_gantt_offset ;
+      x_gantt_offset = 0.5*\ganttchartparameter\c!x ;
+      y_gantt_offset = 0.5*\ganttchartparameter\c!y ;
+
       save x_gantt, y_gantt;
       path x_gantt, y_gantt;
-      x_gantt := ((0,0) -- (\the\gantt_chart_length*\ganttchartparameter\c!x, 0)) 
+      x_gantt := ((-x_gantt_offset ,0) -- (x_gantt_offset + \the\gantt_chart_length*\ganttchartparameter\c!x, 0)) 
                  shifted (0, -0.5*\ganttchartparameter\c!y) ;
-      y_gantt := ((0,0) -- (0, -(\gantt_task_count*\ganttchartparameter\c!y)))
-                 shifted (0, -0.5*\ganttchartparameter\c!y) ;
+      y_gantt := (0,0) -- (0, -((\gantt_task_count+1)*\ganttchartparameter\c!y)) ;
 
       % Draw the frame
-      draw x_gantt --
-           y_gantt shifted (\the\gantt_chart_length*\ganttchartparameter\c!x,0) --
-           reverse (x_gantt shifted (0,-\gantt_task_count*\ganttchartparameter\c!y)) --
-           reverse (y_gantt) -- cycle %
+      draw (x_gantt shifted (0, y_gantt_offset) --
+            y_gantt shifted (x_gantt_offset + \the\gantt_chart_length*\ganttchartparameter\c!x,0) --
+            reverse (x_gantt shifted (0,-\gantt_task_count*\ganttchartparameter\c!y - y_gantt_offset)) --
+            reverse (y_gantt shifted (-x_gantt_offset, 0)) -- cycle )
            withpen pencircle scaled (\ganttchartparameter\c!rulethickness) %
            \ganttchartparameter{framestyle} %
            withcolor \MPcolor{\ganttchartparameter\c!framecolor} ;
@@ -156,7 +159,7 @@
 
 \starttexdefinition draw_gantt_background_horizontal
   \startMPdrawing
-      for i = 1 upto \gantt_task_count - 1:
+      for i = 0 upto \gantt_task_count :
           draw x_gantt shifted (0, -i*\ganttchartparameter\c!y) %
            withpen pencircle scaled (\ganttchartparameter{gridthickness}) %
            \ganttchartparameter{gridstyle} %
@@ -167,7 +170,7 @@
 
 \starttexdefinition draw_gantt_background_vertical
   \startMPdrawing
-      for i = 1 upto \the\gantt_chart_length -1 :
+      for i = 0 upto \the\gantt_chart_length  :
           draw y_gantt shifted (i*\ganttchartparameter\c!x, 0) %
            withpen pencircle scaled (\ganttchartparameter{gridthickness}) %
            \ganttchartparameter{gridstyle} %
@@ -209,7 +212,7 @@
      labeloffset := \ganttchartparameter\c!distance ;
      label.lft (textext("\def\noexpand\letterbackslash currentgantttask{\currentgantttask}
         \dosetgantttaskattributes{\c!style}{\c!color} \gantttaskparameter\c!text"),
-       (0, ypart gantt_bar_shift)) ;
+       (-x_gantt_offset, ypart gantt_bar_shift)) ;
      endgroup ;
   \stopMPdrawing
 \stoptexdefinition
