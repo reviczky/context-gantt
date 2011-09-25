@@ -83,10 +83,29 @@
     \writestatus{DEBUG}{\current_gantt_tasks}
     \initialize_gantt_chart_display
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
+    \processcommacommand[\current_gantt_tasks]\add_gantt_chart_connection
     \show_gantt_chart_display
     \endgroup
     \insideganttchartfalse
 \stoptexdefinition
+
+\startMPinitializations
+  vardef gantt_connection(expr start, stop, x, y) = 
+    if xpart stop - xpart start < x :
+      rt start -- 
+      (xpart start + x , ypart start) -- 
+      (xpart start + x , ypart stop + y) -- 
+      (xpart stop - x  , ypart stop + y) -- 
+      (xpart stop - x  , ypart stop) -- 
+      lft stop 
+    else :
+      rt start -- 
+      (xpart start + x , ypart start) -- 
+      (xpart start + x , ypart stop ) -- 
+      lft stop 
+    fi 
+  enddef;
+\stopMPinitializations
 
 \newcount\gantt_task_count
 
@@ -105,13 +124,14 @@
 \starttexdefinition add_gantt_chart_task #1
   \increment\gantt_task_count 
   \edef\currentgantttask{#1}
+  \expanded{\setupgantttask[#1][\c!n=\gantt_task_count]}
   \startMPdrawing
      gantt_bar_shift :=
         ( \gantttaskparameter\c!start * \gantttaskparameter\c!x, 
          -\gantt_task_count * \gantttaskparameter\c!y ) ;
 
      gantt_bar_size := 
-        ( (\gantttaskparameter\c!stop - \gantttaskparameter\c!start)*\gantttaskparameter\c!x,
+        ( (\gantttaskparameter\c!stop + 1 - \gantttaskparameter\c!start)*\gantttaskparameter\c!x,
           0.5*\gantttaskparameter\c!y ) ;
 
   \stopMPdrawing
@@ -171,11 +191,52 @@
    \stopMPdrawing
 \stoptexdefinition
 
+\starttexdefinition add_gantt_chart_connection #1
+    \writestatus{DEBUG}{Connections for #1: \namedgantttaskparameter{#1}{connection}}
+    \processcommacommand[\namedgantttaskparameter{#1}{connection}]{\add_gantt_chart_connection_indeed{#1}}
+\stoptexdefinition
+
+\starttexdefinition add_gantt_chart_connection_indeed #1#2
+  \writestatus{DEBUG}{connect: #1 and #2}
+  \startMPdrawing
+      drawarrow gantt_connection (
+                 % start
+                 if "\namedgantttaskparameter{#1}\c!alternative" = "task" :
+                     ((\namedgantttaskparameter{#1}\c!stop + 1) *\namedgantttaskparameter{#1}\c!x, 
+                     -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
+                 else :
+                     (\namedgantttaskparameter{#1}\c!start*\namedgantttaskparameter{#1}\c!x +  
+                      0.25*\namedgantttaskparameter{#1}\c!y ,
+                     -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
+                 fi,
+                 % stop
+                 if "\namedgantttaskparameter{#2}\c!alternative" = "task" :
+                     (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x, 
+                     -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
+                 else :
+                     (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x -
+                      0.25*\namedgantttaskparameter{#2}\c!y ,
+                     -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
+                 fi, 
+                 % x 
+                 0.5*\namedgantttaskparameter{#1}\c!x,
+                 % y
+                 0.5*\namedgantttaskparameter{#1}\c!y) ;
+    ;
+  \stopMPdrawing
+\stoptexdefinition
+
 \starttexdefinition show_gantt_chart_display
    \startMPdrawing
       %% Placeholder
    \stopMPdrawing
-   \MPdrawingdonetrue\getMPdrawing
+   \MPdrawingdonetrue
+   \scale
+     [
+       \c!width=\ganttchartparameter\c!width,
+       \c!height=\ganttchartparameter\c!height,
+     ]    
+     {\getMPdrawing}
    \resetMPdrawing
 \stoptexdefinition
 
@@ -213,7 +274,8 @@
 
 \setupganttchart
   [
-    % \c!factor=1000, %Not sure why this is needed
+    \c!width=,
+    \c!height=,
     \c!style=\v!normal,
     \c!color=,
     \c!titlestyle=\v!small,
@@ -263,14 +325,29 @@
     [
       color=red,
       style=\italic,
-      barcolor=red,
+      barcolor=cyan,
+      milestonecolor=cyan,
+      stripecolor=cyan,
       fillcolor=green,
     ]
 
-\startganttchart
-  \task      [one]                 [text={Task one}, start=0, stop=2, float=1, completed=0.5]
-  \task      [two]   [important]   [text={Second},   start=2, stop=8, completed=0.25]
-  \milestone [finish]              [shape=circle,    start=3]
+\startganttchart[width=\textwidth]
+  \task [one]
+        [text={A task}, start=0, stop=2, float=1, completed=0.5, connection={two}]
+  \task [two]
+        [text={A consecutive task}, start=3, stop=6, connection=three]
+  \task [three]
+        [text={another consecutive task}, start=9, stop=10, float=2]
+  \milestone [m1]
+        [important]
+        [text={Milestone with color}, start=5, connection=t5]
+  \task [four]
+        [text={another task}, start=3, stop=4, connected={t6}]
+  \task [t5]
+        [important]
+        [text={another colored task}, start=5, stop=8]
+  \task [t6]
+        [text={another task}, start=5, stop=6]
 \stopganttchart
 
 \stoptext
