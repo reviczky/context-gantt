@@ -240,38 +240,6 @@
    \resetMPdrawing
 \stoptexdefinition
 
-\startmode[gantt-table] % Useful for debugging
-%% Temporary method to show a gantt chart as a table
-%% Will work on display as a metapost graphic
-
-\newtoks \ganttchartdisplay
-
-\starttexdefinition initialize_gantt_chart_display
-  \ganttchartdisplay {}
-  \appendtoks
-    \NC Name \NC Type \NC Start \NC Stop \NC Float \NC Shape \NC \NR
-  \to \ganttchartdisplay
-\stoptexdefinition
-
-\starttexdefinition add_gantt_chart_task #1
-  \appendtoks
-      \NC \namedgantttaskparameter{#1}\c!text
-      \NC \namedgantttaskparameter{#1}\c!alternative
-      \NC \namedgantttaskparameter{#1}\c!start
-      \NC \namedgantttaskparameter{#1}\c!stop
-      \NC \namedgantttaskparameter{#1}{float}
-      \NC \namedgantttaskparameter{#1}{shape}
-      \NC \NR
-  \to \ganttchartdisplay
-\stoptexdefinition
-
-\starttexdefinition show_gantt_chart_display
-    \startTABLE
-      \the\ganttchartdisplay
-    \stopTABLE
-\stoptexdefinition
-\stopmode
-
 \setupganttchart
   [
     \c!width=,
