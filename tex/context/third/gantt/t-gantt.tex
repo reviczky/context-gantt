@@ -1,23 +1,22 @@
 %D \module
-%D   [      file=t-gantt,
-%D        version=2011.09.11,
-%D          title=\CONTEXT\ Module,
-%D       subtitle=Gantt Module,
-%D         author={Adam Reviczky and Aditya Mahajan},
-%D           date=\currentdate,
-%D      copyright={Adam Reviczky and Aditya Mahajan},
-%D        license=Public Domain]
-
-\writestatus{loading}{module gantt}
+%D   [     file=t-gantt,
+%D      version=2011.09.25,
+%D        title=\CONTEXT\ User Module,
+%D     subtitle=Drawing Gantt charts,
+%D       author={Adam Reviczky and Aditya Mahajan},
+%D         date=\currentdate,
+%D    copyright={Adam Reviczky and Aditya Mahajan},
+%D      license=Public Domain]
+\writestatus{loading}{Gantt charts (ver: 2011.09.25)}
 
 \startmodule[gantt]
 
 \unprotect
-\setupmodule[\c!alternative=]
+\setupmodule[backend=]
 
-\doifdefinedelse{\currentmoduleparameter\c!alternative}
-  {\usemodule[gantt-s-mp]}
-  {\usemodule[gantt-s-\currentmoduleparameter\c!alternative]}
+\doifdefinedelse{\currentmoduleparameter{backend}}
+  {\usemodule[gantt-b-metapost]}
+  {\usemodule[gantt-b-\currentmoduleparameter{backend}]}
 
 
 \protect
