@@ -7,6 +7,7 @@
 %D         date=\currentdate,
 %D    copyright={Adam Reviczky and Aditya Mahajan},
 %D      license=Public Domain]
+
 \writestatus{loading}{Gantt charts (ver: 2011.09.25)}
 
 \startmodule[gantt]
@@ -86,6 +87,8 @@
         {\draw_gantt_background_horizontal}
     \doifinset{\ganttchartparameter\c!grid}{\v!on,\v!both,\v!vertical}
         {\draw_gantt_background_vertical}
+    \doifnot{\ganttchartparameter{today}}\v!no
+        {\draw_gantt_background_today}
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_connection
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
     \show_gantt_chart_display
@@ -118,6 +121,11 @@
     gridcolor=darkgray,
     gridthickness=0.5*\ganttchartparameter\c!rulethickness,
     gridstyle={dashed withtightdots},
+    % Today
+    today=no, % or a positive real number
+    todaycolor=orange,
+    todaythickness=1.5*\ganttchartparameter\c!rulethickness,
+    todaystyle={dashed evenly},
   ]
 
 \setupgantttask

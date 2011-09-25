@@ -20,6 +20,7 @@
 %D    \item \type{\initialize_gantt_chart_background}
 %D    \item \type{\draw_gantt_background_horizontal}
 %D    \item \type{\draw_gantt_background_vertical}
+%D    \item \type{\draw_gantt_background_today}
 %D    \item \type{\add_gantt_chart_connection}
 %D    \item \type{\add_gantt_chart_task}
 %D    \item \type{\show_gantt_chart_display}
@@ -106,6 +107,15 @@
            \ganttchartparameter{gridstyle} %
            withcolor \MPcolor{\ganttchartparameter{gridcolor}} ;
       endfor ;
+  \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition draw_gantt_background_today
+  \startMPdrawing
+      draw y_gantt shifted (\ganttchartparameter{today}*\ganttchartparameter\c!x, 0) %
+           withpen pencircle scaled (\ganttchartparameter{todaythickness}) %
+           \ganttchartparameter{todaystyle} %
+           withcolor \MPcolor{\ganttchartparameter{todaycolor}} ;
   \stopMPdrawing
 \stoptexdefinition
 
