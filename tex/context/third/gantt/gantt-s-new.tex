@@ -307,6 +307,7 @@
      [
        \c!width=\ganttchartparameter\c!width,
        \c!height=\ganttchartparameter\c!height,
+       \c!factor=\ganttchartparameter\c!factor,
      ]    
      {\getMPdrawing}
    \resetMPdrawing
@@ -314,18 +315,22 @@
 
 \setupganttchart
   [
+    % scaling
     \c!width=,
     \c!height=,
+    \c!factor=\v!auto,
+    % title style and color
     \c!style=\v!normal,
     \c!color=,
-    \c!titlestyle=\v!small,
-    \c!titlecolor=,
+    % background
     \c!grid=\v!off, % \v!on, \v!horizontal, \v!vertical, \v!both
     \c!setups=,
+    % units
     \c!x=1cm,       
     \c!y=\the\dimexpr1.5\lineheight\relax,
     \c!distance=\the\dimexpr0.5em\relax,
-    % Frame
+    % frame style
+    %\c!frame=\v!on,
     \c!framecolor=,
     \c!rulethickness=1pt,
     framestyle=,
