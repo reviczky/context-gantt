@@ -1,6 +1,6 @@
 %D \module
 %D   [     file=t-gantt,
-%D      version=2011.09.24,
+%D      version=2011.09.25,
 %D        title=\CONTEXT\ User Module,
 %D     subtitle=Drawing Gantt charts,
 %D       author={Adam Reviczky and Aditya Mahajan},
@@ -8,92 +8,22 @@
 %D    copyright={Adam Reviczky and Aditya Mahajan},
 %D      license=Public Domain]
 
-\writestatus{loading}{Gantt charts / MetaPost backend (ver: 2011.09.24)}
+\writestatus{loading}{Gantt charts / MetaPost backend (ver: 2011.09.25)}
 
-\startmodule[gantt-s-mp]
+\startmodule[gantt-backend-metapost]
 \unprotect
 
-\enabletrackers[interfaces.namespaces,context.flush]
-
-\definenamespace
-  [ganttchart]
-  [
-    \c!type=module,
-    \c!name=ganttchart,
-    setup=\v!yes,
-  ]
-
-\definenamespace
-  [gantttask]
-  [
-    \c!type=module,
-    \c!name=gantttask,
-    \c!style=\v!yes,
-    \c!command=\v!yes,
-    setup=\v!list,
-  ]
-
-\appendtoks
-  \ifinsideganttchart
-      \appendtocommalist \currentgantttask \current_gantt_tasks
-  \else
-      % Ideally, we don't need this, but something weird is happening
-      \setupgantttask[\currentgantttask][parent=\????gantttask]
-  \fi
-\to \everydefinegantttask
-
-\starttexdefinition install_gantt_task_handler #1#2
-    %% #1 =  \definegantttask[##1[##2][alternative=#2, ##3]
-    \def#1{\doquadrupleargument\redodefinegantttask[#2]}
-\stoptexdefinition
-
-\starttexdefinition redodefinegantttask [#1][#2][#3][#4]
-  \iffourthargument
-    \definegantttask[#2][\s!parent=\????gantttask#3,\c!alternative=#1, #4]
-  \else
-    \definegantttask[#2][\s!parent=\????gantttask,\c!alternative=#1, #3]
-  \fi
-\stoptexdefinition
-
-\install_gantt_task_handler \define_gantt_task      {task}
-\install_gantt_task_handler \define_gantt_milestone {milestone}
-
-\def\current_gantt_tasks{}
-
-\startsetups ganttchart::setups
-  \def\current_gantt_tasks{}
-
-  \let\task         \define_gantt_task
-  \let\milestone    \define_gantt_milestone
-\stopsetups
-
-\newif\ifinsideganttchart
-
-\def\startganttchart
-    {\dosingleargument\start_gantt_chart_indeed}
-
-\starttexdefinition start_gantt_chart_indeed [#1]
-    \begingroup
-    \insideganttcharttrue
-    \setupganttchart[#1]
-    \processcommacommand[ganttchart::setups,\ganttchartparameter\c!setups]\directsetup
-\stoptexdefinition
-
-\starttexdefinition stopganttchart
-    \writestatus{DEBUG}{\current_gantt_tasks}
-    \initialize_gantt_chart_display
-    \processcommacommand[\current_gantt_tasks]\initialize_gantt_chart_task
-    \initialize_gantt_chart_background
-    \doifinset{\ganttchartparameter\c!grid}{\v!on,\v!both,\v!horizontal}
-        {\draw_gantt_background_horizontal}
-    \doifinset{\ganttchartparameter\c!grid}{\v!on,\v!both,\v!vertical}
-        {\draw_gantt_background_vertical}
-    \processcommacommand[\current_gantt_tasks]\add_gantt_chart_connection
-    \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
-    \show_gantt_chart_display
-    \endgroup
-    \insideganttchartfalse
-\stoptexdefinition
+%D A backend module needs to implement the following functions:
+%D \startitemize
+%D    \item \type{\initialize_gantt_chart_display}
+%D    \item \type{\initialize_gantt_chart_task}
+%D    \item \type{\initialize_gantt_chart_background}
+%D    \item \type{\draw_gantt_background_horizontal}
+%D    \item \type{\draw_gantt_background_vertical}
+%D    \item \type{\add_gantt_chart_connection}
+%D    \item \type{\add_gantt_chart_task}
+%D    \item \type{\show_gantt_chart_display}
+%D \stopitemize
 
 \startMPinitializations
   vardef gantt_connection(expr start, stop, x, y) = 
@@ -112,14 +42,14 @@
     fi 
   enddef;
 
-  % This should probabily go somewhere else
+  % The default metapost dots are too far spaced to be visible, so we define a
+  % tight version
   picture withtightdots ;
   withtightdots=dashpattern(off 0.5 on 0 off 0.5); % `dashed withtightdots'
 \stopMPinitializations
 
 \newcount\gantt_task_count
 \newcount\gantt_chart_length
-
 
 \starttexdefinition initialize_gantt_chart_display
    \gantt_task_count=0
@@ -261,12 +191,10 @@
 \stoptexdefinition
 
 \starttexdefinition add_gantt_chart_connection #1
-    \writestatus{DEBUG}{Connections for #1: \namedgantttaskparameter{#1}{connection}}
     \processcommacommand[\namedgantttaskparameter{#1}{connection}]{\add_gantt_chart_connection_indeed{#1}}
 \stoptexdefinition
 
 \starttexdefinition add_gantt_chart_connection_indeed #1#2
-  \writestatus{DEBUG}{connect: #1 and #2}
   \startMPdrawing
      begingroup;
        interim linecap := squared;
@@ -313,111 +241,6 @@
    \resetMPdrawing
 \stoptexdefinition
 
-\setupganttchart
-  [
-    % scaling
-    \c!width=,
-    \c!height=,
-    \c!factor=\v!auto,
-    % title style and color
-    \c!style=\v!normal,
-    \c!color=,
-    % background
-    \c!grid=\v!off, % \v!on, \v!horizontal, \v!vertical, \v!both
-    \c!setups=,
-    % units
-    \c!x=1cm,       
-    \c!y=\the\dimexpr1.5\lineheight\relax,
-    \c!distance=\the\dimexpr0.5em\relax,
-    % frame style
-    %\c!frame=\v!on,
-    \c!framecolor=,
-    \c!rulethickness=1pt,
-    framestyle=,
-    % Grid style
-    gridcolor=darkgray,
-    gridthickness=0.5*\ganttchartparameter\c!rulethickness,
-    gridstyle={dashed withtightdots},
-  ]
-
-\setupgantttask
-  [
-    \c!color=,
-    \c!style=\bold,
-    linewidth=1pt,
-    % Don't change these
-    completed=0, % From 0 to 1
-    float=0,
-    % Stripe
-    stripethickness=0.5*\ganttchartparameter\c!rulethickness,
-    stripecolor=lightblue,
-    stripestyle=, % dashed withdots
-    % Bar
-    barthickness=\ganttchartparameter\c!rulethickness,
-    barcolor=blue,
-    barstyle=, %dashed evenly
-    % Fill
-    fillcolor=blue,
-    % Float
-    floatcolor=darkgray,
-    floatthickness=1pt,
-    floatstyle={dashed evenly},
-    % Mileston
-    milestonecolor=green,
-    milestoneshape=fulldiamond,
-    % Connection
-    connectioncolor=,
-    connectionstyle=,
-    connectionthickness=\ganttchartparameter\c!rulethickness,
-    % Dimensions
-    \c!stop=\gantttaskparameter\c!start,
-  ]
-
 
 \protect
 \stopmodule
-
-\starttext
-
-\definegantttask
-    [important]
-    [
-      color=red,
-      style=\italic,
-      barcolor=cyan,
-      milestonecolor=cyan,
-      stripecolor=cyan,
-      fillcolor=green,
-    ]
-
-\startbuffer
-  \task [one]
-        [text={A task}, start=0, stop=2, float=1, completed=0.5, connection={two}]
-  \task [two]
-        [text={A consecutive task}, start=3, stop=6, connection=three]
-  \task [three]
-        [text={another consecutive task}, start=9, stop=10, float=2]
-  \milestone [m1]
-        [important]
-        [text={Milestone with color}, start=5, connection=t5]
-  \task [four]
-        [text={another task}, start=3, stop=4, connected={t6}]
-  \task [t5]
-        [important]
-        [text={another colored task}, start=5, stop=8]
-  \task [t6]
-        [text={another task}, start=5, stop=6]
-\stopbuffer
-
-\startganttchart[width=\textwidth, grid=on]
-  \getbuffer
-\stopganttchart
-
-\startganttchart[width=\textwidth, grid=horizontal]
-  \getbuffer
-\stopganttchart
-
-\startganttchart[width=\textwidth, grid=vertical]
-  \getbuffer
-\stopganttchart
-\stoptext
