@@ -91,7 +91,7 @@
 
 \startMPinitializations
   vardef gantt_connection(expr start, stop, x, y) = 
-    if xpart stop - xpart start < x :
+    if xpart stop - xpart start < 2*x :
       rt start -- 
       (xpart start + x , ypart start) -- 
       (xpart start + x , ypart stop + y) -- 
