@@ -28,23 +28,31 @@
   [
     \c!type=module,
     \c!name=gantttask,
+    \c!style=\v!yes,
     \c!command=\v!yes,
     setup=\v!list,
   ]
 
-\newtoks \everydefinegantttask
-
 \appendtoks
-  \appendtocommalist \currentgantttask \current_gantt_tasks
+  \ifinsideganttchart
+      \appendtocommalist \currentgantttask \current_gantt_tasks
+  \else
+      % Ideally, we don't need this, but something weird is happening
+      \setupgantttask[\currentgantttask][parent=\????gantttask]
+  \fi
 \to \everydefinegantttask
 
 \starttexdefinition install_gantt_task_handler #1#2
-    %% #1 =  \definegantttask[##1][alternative=#2, ##2]
-    \def#1{\dotripleargument\redodefinegantttask[#2]}
+    %% #1 =  \definegantttask[##1[##2][alternative=#2, ##3]
+    \def#1{\doquadrupleargument\redodefinegantttask[#2]}
 \stoptexdefinition
 
-\starttexdefinition redodefinegantttask [#1][#2][#3]
+\starttexdefinition redodefinegantttask [#1][#2][#3][#4]
+  \iffourthargument
+    \definegantttask[#2][\s!parent=\????gantttask#3,\c!alternative=#1, #4]
+  \else
     \definegantttask[#2][\s!parent=\????gantttask,\c!alternative=#1, #3]
+  \fi
 \stoptexdefinition
 
 \install_gantt_task_handler \define_gantt_task      {task}
@@ -59,12 +67,14 @@
   \let\milestone    \define_gantt_milestone
 \stopsetups
 
+\newif\ifinsideganttchart
 
 \def\startganttchart
     {\dosingleargument\start_gantt_chart_indeed}
 
 \starttexdefinition start_gantt_chart_indeed [#1]
     \begingroup
+    \insideganttcharttrue
     \setupganttchart[#1]
     \processcommacommand[ganttchart::setups,\ganttchartparameter\c!setups]\directsetup
 \stoptexdefinition
@@ -75,6 +85,7 @@
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
     \show_gantt_chart_display
     \endgroup
+    \insideganttchartfalse
 \stoptexdefinition
 
 \newcount\gantt_task_count
@@ -85,28 +96,43 @@
    \startMPdrawing
      save gantt_bar_size, gantt_bar_shift ;
      pair gantt_bar_size, gantt_bar_shift ;
-
+      
+     save gantt_square ; path gantt_square ;
+     gantt_square := (0,-0.5) -- (1,-0.5) -- (1,0.5) -- (0,0.5) -- cycle ;
    \stopMPdrawing
 \stoptexdefinition
 
 \starttexdefinition add_gantt_chart_task #1
   \increment\gantt_task_count 
   \edef\currentgantttask{#1}
-  \getvalue{gantt_draw_\gantttaskparameter\c!alternative}{#1}
-\stoptexdefinition
-
-\starttexdefinition gantt_draw_task #1
   \startMPdrawing
-     gantt_bar_size := 
-        ( (\gantttaskparameter\c!stop - \gantttaskparameter\c!start)*\gantttaskparameter\c!x,
-          0.6*\gantttaskparameter\c!y ) ;
-
      gantt_bar_shift :=
         ( \gantttaskparameter\c!start * \gantttaskparameter\c!x, 
          -\gantt_task_count * \gantttaskparameter\c!y ) ;
 
+     gantt_bar_size := 
+        ( (\gantttaskparameter\c!stop - \gantttaskparameter\c!start)*\gantttaskparameter\c!x,
+          0.5*\gantttaskparameter\c!y ) ;
+
+  \stopMPdrawing
+  \getvalue{gantt_draw_\gantttaskparameter\c!alternative}{#1}
+  \startMPdrawing
+     %% Draw the label
+     %% \doset...attributes is defined as an unexpandable macro. Therefore, it
+     %$ uses the value of \type{\currenttask} when it is called. To avoid that
+     %% we also set the value of \type{\currenttask}. However, the contents of
+     %% textext is expanded twice, so we need to ensure that the write string is 
+     %% created after the second expansion
+     label.lft (textext("\def\noexpand\letterbackslash currentgantttask{\currentgantttask}
+        \dosetgantttaskattributes{\c!style}{\c!color} \gantttaskparameter\c!text"),
+       (-\gantttaskparameter\c!distance, ypart gantt_bar_shift)) ;
+  \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition gantt_draw_task #1
+  \startMPdrawing
      %% Draw the completed task
-     fill unitsquare %
+     fill gantt_square %
         xyscaled (xpart gantt_bar_size * \gantttaskparameter{completed},
                   ypart gantt_bar_size) %
         shifted  gantt_bar_shift %
@@ -114,7 +140,7 @@
 
      %% Draw float
      if \gantttaskparameter{float} <> 0 :
-           draw unitsquare %
+           draw gantt_square %
               xyscaled (\gantttaskparameter{float}*\gantttaskparameter\c!x,
                         ypart gantt_bar_size) %
               shifted (gantt_bar_shift + (xpart gantt_bar_size, 0)) %
@@ -127,7 +153,7 @@
      stripe_gap   := \gantttaskparameter\c!y / 5 ;
      stripe_path_a (withpen pencircle scaled \gantttaskparameter{stripethickness} withcolor \MPcolor{\gantttaskparameter{stripecolor}})
                    (draw)
-      unitsquare % 
+      gantt_square % 
         xyscaled gantt_bar_size  %
         shifted  gantt_bar_shift %
         withpen pencircle scaled \gantttaskparameter{barthickness} %
@@ -139,9 +165,8 @@
 \starttexdefinition gantt_draw_milestone #1
    \startMPdrawing
       fill \gantttaskparameter{milestoneshape} %
-           xyscaled (0.6*\gantttaskparameter\c!y, 0.6*\gantttaskparameter\c!y) %
-           shifted  ( \gantttaskparameter\c!start * \gantttaskparameter\c!x,
-                     -\gantt_task_count * \gantttaskparameter\c!y ) %
+           xyscaled (ypart gantt_bar_size, ypart gantt_bar_size) %
+           shifted  gantt_bar_shift %
            withcolor \MPcolor{\gantttaskparameter{milestonecolor}} ;
    \stopMPdrawing
 \stoptexdefinition
@@ -199,7 +224,8 @@
 
 \setupgantttask
   [
-    \c!color=red,
+    \c!color=,
+    \c!style=\bold,
     linewidth=1pt,
     % Don't change these
     completed=0, % From 0 to 1
@@ -221,7 +247,9 @@
     milestoneshape=fulldiamond,
     % Dimensions
     \c!x=1cm,       
-    \c!y=\the\dimexpr\lineheight\relax,
+    \c!y=\the\dimexpr1.5\lineheight\relax,
+    \c!distance=0.5cm,
+    \c!stop=\gantttaskparameter\c!start,
   ]
 
 
@@ -229,11 +257,20 @@
 \stopmodule
 
 \starttext
-\loggingall
+
+\definegantttask
+    [important]
+    [
+      color=red,
+      style=\italic,
+      barcolor=red,
+      fillcolor=green,
+    ]
+
 \startganttchart
-  \task      [one]      [text={Task one}, start=0, stop=2, float=1, completed=0.5]
-  \task      [two]      [text={Second},   start=2, stop=8, completed=0.25, fillcolor=green]
-  \milestone [finish]   [shape=circle,    start=3]
+  \task      [one]                 [text={Task one}, start=0, stop=2, float=1, completed=0.5]
+  \task      [two]   [important]   [text={Second},   start=2, stop=8, completed=0.25]
+  \milestone [finish]              [shape=circle,    start=3]
 \stopganttchart
 
 \stoptext
