@@ -82,8 +82,10 @@
 \starttexdefinition stopganttchart
     \writestatus{DEBUG}{\current_gantt_tasks}
     \initialize_gantt_chart_display
-    \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
+    \processcommacommand[\current_gantt_tasks]\initialize_gantt_chart_task
+    \draw_gantt_background
     \processcommacommand[\current_gantt_tasks]\add_gantt_chart_connection
+    \processcommacommand[\current_gantt_tasks]\add_gantt_chart_task
     \show_gantt_chart_display
     \endgroup
     \insideganttchartfalse
@@ -108,9 +110,12 @@
 \stopMPinitializations
 
 \newcount\gantt_task_count
+\newcount\gantt_chart_length
+
 
 \starttexdefinition initialize_gantt_chart_display
    \gantt_task_count=0
+   \gantt_chart_length=0
    \resetMPdrawing
    \startMPdrawing
      save gantt_bar_size, gantt_bar_shift ;
@@ -121,18 +126,42 @@
    \stopMPdrawing
 \stoptexdefinition
 
-\starttexdefinition add_gantt_chart_task #1
+\starttexdefinition draw_gantt_background
+  \startMPdrawing
+     %% TODO: Check value of grid
+      save gantt_x, gantt_y;
+      path gantt_x, gantt_y;
+      gantt_x := (0,0) -- (\the\gantt_chart_length*\ganttchartparameter\c!x, 0);
+      gantt_y := ((0,0) -- (0, -(\gantt_task_count*\ganttchartparameter\c!y)))
+                 shifted (0, -0.5*\ganttchartparameter\c!y) ;
+      for i = 0 upto \gantt_task_count :
+          draw gantt_x shifted (0, -(i+0.5)*\ganttchartparameter\c!y) ;
+      endfor ;
+      for i = 0 upto \the\gantt_chart_length :
+          draw gantt_y shifted (i*\ganttchartparameter\c!x, 0) ;
+      endfor ;
+  \stopMPdrawing
+\stoptexdefinition
+
+\starttexdefinition initialize_gantt_chart_task #1
   \increment\gantt_task_count 
-  \edef\currentgantttask{#1}
+  \def\gantt_current_length{\namedgantttaskparameter{#1}\c!stop + \namedgantttaskparameter{#1}{float} + 1}
   \expanded{\setupgantttask[#1][\c!n=\gantt_task_count]}
+  \ifnum\gantt_chart_length<\the\numexpr\gantt_current_length\relax
+        \gantt_chart_length=\the\numexpr\gantt_current_length\relax
+  \fi
+\stoptexdefinition
+
+\starttexdefinition add_gantt_chart_task #1
+  \edef\currentgantttask{#1}
   \startMPdrawing
      gantt_bar_shift :=
-        ( \gantttaskparameter\c!start * \gantttaskparameter\c!x, 
-         -\gantt_task_count * \gantttaskparameter\c!y ) ;
+        ( \gantttaskparameter\c!start * \ganttchartparameter\c!x, 
+         -\gantttaskparameter\c!n * \ganttchartparameter\c!y ) ;
 
      gantt_bar_size := 
-        ( (\gantttaskparameter\c!stop + 1 - \gantttaskparameter\c!start)*\gantttaskparameter\c!x,
-          0.5*\gantttaskparameter\c!y ) ;
+        ( (\gantttaskparameter\c!stop + 1 - \gantttaskparameter\c!start)*\ganttchartparameter\c!x,
+          0.5*\ganttchartparameter\c!y ) ;
 
   \stopMPdrawing
   \getvalue{gantt_draw_\gantttaskparameter\c!alternative}{#1}
@@ -145,7 +174,7 @@
      %% created after the second expansion
      label.lft (textext("\def\noexpand\letterbackslash currentgantttask{\currentgantttask}
         \dosetgantttaskattributes{\c!style}{\c!color} \gantttaskparameter\c!text"),
-       (-\gantttaskparameter\c!distance, ypart gantt_bar_shift)) ;
+       (-\ganttchartparameter\c!distance, ypart gantt_bar_shift)) ;
   \stopMPdrawing
 \stoptexdefinition
 
@@ -161,7 +190,7 @@
      %% Draw float
      if \gantttaskparameter{float} <> 0 :
            draw gantt_square %
-              xyscaled (\gantttaskparameter{float}*\gantttaskparameter\c!x,
+              xyscaled (\gantttaskparameter{float}*\ganttchartparameter\c!x,
                         ypart gantt_bar_size) %
               shifted (gantt_bar_shift + (xpart gantt_bar_size, 0)) %
               withpen pencircle scaled \gantttaskparameter{floatthickness} %
@@ -170,7 +199,7 @@
      fi ;
      %% Draw the whole task
      stripe_angle := 45 ;
-     stripe_gap   := \gantttaskparameter\c!y / 5 ;
+     stripe_gap   := \ganttchartparameter\c!y / 5 ;
      stripe_path_a (withpen pencircle scaled \gantttaskparameter{stripethickness} withcolor \MPcolor{\gantttaskparameter{stripecolor}})
                    (draw)
       gantt_square % 
@@ -205,26 +234,26 @@
         drawarrow gantt_connection (
                    % start
                    if "\namedgantttaskparameter{#1}\c!alternative" = "task" :
-                       ((\namedgantttaskparameter{#1}\c!stop + 1) *\namedgantttaskparameter{#1}\c!x, 
-                       -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
+                       ((\namedgantttaskparameter{#1}\c!stop + 1) *\ganttchartparameter\c!x, 
+                       -\namedgantttaskparameter{#1}\c!n*\ganttchartparameter\c!y)
                    else :
-                       (\namedgantttaskparameter{#1}\c!start*\namedgantttaskparameter{#1}\c!x +  
-                        0.25*\namedgantttaskparameter{#1}\c!y ,
-                       -\namedgantttaskparameter{#1}\c!n*\namedgantttaskparameter{#1}\c!y)
+                       (\namedgantttaskparameter{#1}\c!start*\ganttchartparameter\c!x +  
+                        0.25*\ganttchartparameter\c!y ,
+                       -\namedgantttaskparameter{#1}\c!n*\ganttchartparameter\c!y)
                    fi,
                    % stop
                    if "\namedgantttaskparameter{#2}\c!alternative" = "task" :
-                       (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x, 
-                       -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
+                       (\namedgantttaskparameter{#2}\c!start*\ganttchartparameter\c!x, 
+                       -\namedgantttaskparameter{#2}\c!n*\ganttchartparameter\c!y)
                    else :
-                       (\namedgantttaskparameter{#2}\c!start*\namedgantttaskparameter{#2}\c!x -
-                        0.25*\namedgantttaskparameter{#2}\c!y ,
-                       -\namedgantttaskparameter{#2}\c!n*\namedgantttaskparameter{#2}\c!y)
+                       (\namedgantttaskparameter{#2}\c!start*\ganttchartparameter\c!x -
+                        0.25*\ganttchartparameter\c!y ,
+                       -\namedgantttaskparameter{#2}\c!n*\ganttchartparameter\c!y)
                    fi, 
                    % x 
-                   0.5*\namedgantttaskparameter{#1}\c!x,
+                   0.5*\ganttchartparameter\c!x,
                    % y
-                   0.5*\namedgantttaskparameter{#1}\c!y) ;
+                   0.5*\ganttchartparameter\c!y) ;
      endgroup ;
   \stopMPdrawing
 \stoptexdefinition
@@ -253,6 +282,9 @@
     \c!titlecolor=,
     \c!grid=\v!off, % \v!on, \v!horizontal, \v!vertical, \v!both
     \c!setups=,
+    \c!x=1cm,       
+    \c!y=\the\dimexpr1.5\lineheight\relax,
+    \c!distance=0.5cm,
   ]
 
 \setupgantttask
@@ -279,9 +311,6 @@
     milestonecolor=green,
     milestoneshape=fulldiamond,
     % Dimensions
-    \c!x=1cm,       
-    \c!y=\the\dimexpr1.5\lineheight\relax,
-    \c!distance=0.5cm,
     \c!stop=\gantttaskparameter\c!start,
   ]
 
