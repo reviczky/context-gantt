@@ -27,20 +27,20 @@
 %D \stopitemize
 
 \startMPinitializations
-  vardef gantt_connection(expr start, stop, x, y) = 
+  vardef gantt_connection(expr start, stop, x, y) =
     if xpart stop - xpart start < 2*x :
-      rt start -- 
-      (xpart start + x , ypart start) -- 
-      (xpart start + x , ypart stop + y) -- 
-      (xpart stop - x  , ypart stop + y) -- 
-      (xpart stop - x  , ypart stop) -- 
-      lft stop 
+      rt start --
+      (xpart start + x , ypart start) --
+      (xpart start + x , ypart stop + y) --
+      (xpart stop - x  , ypart stop + y) --
+      (xpart stop - x  , ypart stop) --
+      lft stop
     else :
-      rt start -- 
-      (xpart stop - x , ypart start) -- 
-      (xpart stop - x , ypart stop ) -- 
-      lft stop 
-    fi 
+      rt start --
+      (xpart stop - x , ypart start) --
+      (xpart stop - x , ypart stop ) --
+      lft stop
+    fi
   enddef;
 
   % The default metapost dots are too far spaced to be visible, so we define a
@@ -59,7 +59,7 @@
    \startMPdrawing
      save gantt_bar_size, gantt_bar_shift ;
      pair gantt_bar_size, gantt_bar_shift ;
-      
+
      save gantt_square ; path gantt_square ;
      gantt_square := (0,-0.5) -- (1,-0.5) -- (1,0.5) -- (0,0.5) -- cycle ;
    \stopMPdrawing
@@ -73,7 +73,7 @@
 
       save x_gantt, y_gantt;
       path x_gantt, y_gantt;
-      x_gantt := ((-x_gantt_offset ,0) -- (x_gantt_offset + \the\gantt_chart_length*\ganttchartparameter\c!x, 0)) 
+      x_gantt := ((-x_gantt_offset ,0) -- (x_gantt_offset + \the\gantt_chart_length*\ganttchartparameter\c!x, 0))
                  shifted (0, -0.5*\ganttchartparameter\c!y) ;
       y_gantt := (0,0) -- (0, -((\gantt_task_count+1)*\ganttchartparameter\c!y)) ;
 
@@ -120,7 +120,7 @@
 \stoptexdefinition
 
 \starttexdefinition initialize_gantt_chart_task #1
-  \increment\gantt_task_count 
+  \increment\gantt_task_count
   \def\gantt_current_length{\namedgantttaskparameter{#1}\c!stop + \namedgantttaskparameter{#1}{float} + 1}
   \expanded{\setupgantttask[#1][\c!n=\gantt_task_count]}
   \ifnum\gantt_chart_length<\the\numexpr\gantt_current_length\relax
@@ -132,10 +132,10 @@
   \edef\currentgantttask{#1}
   \startMPdrawing
      gantt_bar_shift :=
-        ( \gantttaskparameter\c!start * \ganttchartparameter\c!x, 
+        ( \gantttaskparameter\c!start * \ganttchartparameter\c!x,
          -\gantttaskparameter\c!n * \ganttchartparameter\c!y ) ;
 
-     gantt_bar_size := 
+     gantt_bar_size :=
         ( (\gantttaskparameter\c!stop + 1 - \gantttaskparameter\c!start)*\ganttchartparameter\c!x,
           0.5*\ganttchartparameter\c!y ) ;
 
@@ -146,7 +146,7 @@
      %% \doset...attributes is defined as an unexpandable macro. Therefore, it
      %$ uses the value of \type{\currenttask} when it is called. To avoid that
      %% we also set the value of \type{\currenttask}. However, the contents of
-     %% textext is expanded twice, so we need to ensure that the write string is 
+     %% textext is expanded twice, so we need to ensure that the write string is
      %% created after the second expansion
      begingroup ;
      labeloffset := \ganttchartparameter\c!distance ;
@@ -182,7 +182,7 @@
      stripe_gap   := \ganttchartparameter\c!y / 5 ;
      stripe_path_a (withpen pencircle scaled (\gantttaskparameter{stripethickness})  \gantttaskparameter{stripestyle} withcolor \MPcolor{\gantttaskparameter{stripecolor}})
                    (draw)
-      gantt_square % 
+      gantt_square %
         xyscaled gantt_bar_size  %
         shifted  gantt_bar_shift %
         withpen pencircle scaled (\gantttaskparameter{barthickness}) %
@@ -213,23 +213,23 @@
         drawarrow gantt_connection (
                    % start
                    if "\namedgantttaskparameter{#1}\c!alternative" = "task" :
-                       ((\namedgantttaskparameter{#1}\c!stop + 1) *\ganttchartparameter\c!x, 
+                       ((\namedgantttaskparameter{#1}\c!stop + 1) *\ganttchartparameter\c!x,
                        -\namedgantttaskparameter{#1}\c!n*\ganttchartparameter\c!y)
                    else :
-                       (\namedgantttaskparameter{#1}\c!start*\ganttchartparameter\c!x +  
+                       (\namedgantttaskparameter{#1}\c!start*\ganttchartparameter\c!x +
                         0.25*\ganttchartparameter\c!y ,
                        -\namedgantttaskparameter{#1}\c!n*\ganttchartparameter\c!y)
                    fi,
                    % stop
                    if "\namedgantttaskparameter{#2}\c!alternative" = "task" :
-                       (\namedgantttaskparameter{#2}\c!start*\ganttchartparameter\c!x, 
+                       (\namedgantttaskparameter{#2}\c!start*\ganttchartparameter\c!x,
                        -\namedgantttaskparameter{#2}\c!n*\ganttchartparameter\c!y)
                    else :
                        (\namedgantttaskparameter{#2}\c!start*\ganttchartparameter\c!x -
                         0.25*\ganttchartparameter\c!y ,
                        -\namedgantttaskparameter{#2}\c!n*\ganttchartparameter\c!y)
-                   fi, 
-                   % x 
+                   fi,
+                   % x
                    0.5*\ganttchartparameter\c!x,
                    % y
                    0.5*\ganttchartparameter\c!y) ;
@@ -247,7 +247,7 @@
        \c!width=\ganttchartparameter\c!width,
        \c!height=\ganttchartparameter\c!height,
        \c!factor=\ganttchartparameter\c!factor,
-     ]    
+     ]
      {\getMPdrawing}
    \resetMPdrawing
 \stoptexdefinition
