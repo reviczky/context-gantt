@@ -151,7 +151,8 @@
      begingroup ;
      labeloffset := \ganttchartparameter\c!distance ;
      label.lft (textext("\def\noexpand\letterbackslash currentgantttask{\currentgantttask}
-        \dosetgantttaskattributes{\c!style}{\c!color} \gantttaskparameter\c!text"),
+        \doattributes{\currentgantttaskhash}{c!style}{c!color} \gantttaskparameter\c!text"),
+        %% \dosetgantttaskattributes{\c!style}{\c!color} \gantttaskparameter\c!text"),
        (-x_gantt_offset, ypart gantt_bar_shift)) ;
      endgroup ;
   \stopMPdrawing
