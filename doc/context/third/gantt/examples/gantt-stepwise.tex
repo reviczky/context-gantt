@@ -1,0 +1,87 @@
+\usemodule[gantt]
+
+\startbuffer[gantt]
+  \task[t1.1]
+       [
+          text={Review specification},
+          start=0,
+          stop=2,
+          float=2,
+       ]
+  \task[t1.2]
+       [
+         text={Review budget},
+         start=2,
+         stop=4,
+         float=1,
+      ]
+  \task[t1.3]
+       [
+         text={Review schedule},
+         start=2,
+         stop=5,
+         float=3,
+      ]
+  \task[t1.4]
+       [
+         text={Develop plan},
+         start=7,
+         stop=9,
+         float=2,
+      ]
+\stopbuffer
+
+\startsetups connections
+  \setupgantttask [t1.1] [connection={t1.2}]
+  \setupgantttask [t1.2] [connection={t1.4}]
+  \setupgantttask [t1.3] [connection={t1.4}]
+\stopsetups
+
+\startsetups today
+  \setupganttchart[today=4]
+\stopsetups
+
+\startsetups completion
+  \setupgantttask [t1.1] [completed=1]
+  \setupgantttask [t1.2] [completed=0.2]
+  \setupgantttask [t1.3] [completed=0.8]
+\stopsetups
+
+\startsetups important
+  \setupgantttask [t1.2] [fillcolor=red:2, barcolor=red, stripecolor=orange]
+\stopsetups
+
+\setuppapersize[S6]
+
+\starttext
+\startganttchart[width=\textwidth]
+  \getbuffer[gantt]
+\stopganttchart
+
+\page
+
+\startganttchart[width=\textwidth, setups={connections}]
+  \getbuffer[gantt]
+\stopganttchart
+
+\page
+
+\startganttchart[width=\textwidth, setups={connections,today}]
+  \getbuffer[gantt]
+\stopganttchart
+
+\page
+
+\startganttchart[width=\textwidth, setups={connections,today,completion}]
+  \getbuffer[gantt]
+\stopganttchart
+
+\page
+
+\startganttchart[width=\textwidth, setups={connections,today,completion, important}]
+  \getbuffer[gantt]
+\stopganttchart
+
+
+
+\stoptext
