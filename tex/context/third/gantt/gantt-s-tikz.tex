@@ -1,6 +1,6 @@
 %D \module
 %D   [     file=t-gantt-tikz,
-%D      version=2012.03.13,
+%D      version=2012.03.14,
 %D        title=\CONTEXT\ User Module,
 %D     subtitle=Drawing Gantt charts,
 %D       author=Adam Reviczky,
@@ -22,7 +22,7 @@
 
 \definesystemvariable{gantt}
 
-\newcount\ganttnum
+\newcount\ganttnum \gnattnum=0
 \newcount\gantttitlenum
 \newcount\ganttwidth
 
@@ -70,7 +70,6 @@
 % fontsize - fontsize of labels (default: \tf)
 % titlefontsize - fontsize of title section (default: \tfx)
 % drawledgerline  - Switch to enable/disable the drawing of horizontal ledger lines (default value: false)
-
 \long\def\dostartgantt[#1]#2#3%
   {\getparameters[\??gantt][#1]%
    \gdef\gantt!ganttunitlength{\getvalue{@@ganttxunitlength}}
@@ -120,7 +119,7 @@
   },
   after={
     \ganttlastx = 0cm
-    \doglobal\decrement\ganttnum
+    % \doglobal\decrement\ganttnum
   }
   ]
 
@@ -148,7 +147,7 @@
 \long\def\donumtitle#1#2#3#4%
   {\gantttitlenum=#1
    \dostepwiserecurse{#1}{#3}{#2}{
-     \titleelement{\the\gantttitlenum}{#4}
+     \titleelement{\the\gantttitlenum}{#4} 
      \advance\gantttitlenum by #2;
    }
   }
