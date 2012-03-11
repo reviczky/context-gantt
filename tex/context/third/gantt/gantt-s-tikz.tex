@@ -73,10 +73,10 @@
 
 \long\def\dostartgantt[#1]#2#3%
   {\getparameters[\??gantt][#1]%
-   \gdef\v!ganttunitlength{\getvalue{@@ganttxunitlength}}
-   \gdef\v!fontsize{\getvalue{@@ganttfontsize}}
-   \gdef\v!titlefontsize{\getvalue{@@gantttitlefontsize}}
-   \gdef\v!drawledgerline{\@@ganttdrawledgerline}
+   \gdef\gantt!ganttunitlength{\getvalue{@@ganttxunitlength}}
+   \gdef\gantt!fontsize{\getvalue{@@ganttfontsize}}
+   \gdef\gantt!titlefontsize{\getvalue{@@gantttitlefontsize}}
+   \gdef\gantt!drawledgerline{\@@ganttdrawledgerline}
 
    \bgroup
    \tikzstyle{time}=[coordinate]
@@ -94,15 +94,15 @@
    \advance\ganttheight by 1;
 
    \draw (0,0.5) node[above] {\ganttxstringtop} -- (0,1.4-\ganttheight)  node[below] {\ganttxstringbottom};
-   \draw (\ganttwidth*\v!ganttunitlength,0.5) node[above] {\ganttxstringtop} -- (\ganttwidth*\v!ganttunitlength,1.4-\ganttheight)  node[below] {\ganttxstringbottom};
+   \draw (\ganttwidth*\gantt!ganttunitlength,0.5) node[above] {\ganttxstringtop} -- (\ganttwidth*\gantt!ganttunitlength,1.4-\ganttheight)  node[below] {\ganttxstringbottom};
 
    % draw grid
    \foreach \!!t in {1,2,...,\ganttwidth}{
-     \draw[dotted] (\v!ganttunitlength*\!!t,-0.5) node[above] {\ganttxstringtop} -- (\v!ganttunitlength*\!!t,1.4-\ganttheight)  node[below] {\ganttxstringbottom};
+     \draw[dotted] (\gantt!ganttunitlength*\!!t,-0.5) node[above] {\ganttxstringtop} -- (\gantt!ganttunitlength*\!!t,1.4-\ganttheight)  node[below] {\ganttxstringbottom};
    }
 
    % draw x axis
-   \draw[] (0,-#2+0.4) -- (\ganttwidth*\v!ganttunitlength,-#2+0.4);
+   \draw[] (0,-#2+0.4) -- (\ganttwidth*\gantt!ganttunitlength,-#2+0.4);
    \egroup
   }
 
@@ -127,17 +127,17 @@
 % \titleelement draws one element of the title
 % usage: \titleelement{label}{length}
 \long\def\dotitleelement#1#2%
-  {\gantttmpa=\dimexpr\v!ganttunitlength*#2\relax
+  {\gantttmpa=\dimexpr\gantt!ganttunitlength*#2\relax
    \divide\gantttmpa by 2;
 
    \def\!!xoffset{1.5}
 
-   \draw (\ganttlastx,\ganttnum) rectangle (\ganttlastx+#2*\v!ganttunitlength,\ganttnum+0.6);
+   \draw (\ganttlastx,\ganttnum) rectangle (\ganttlastx+#2*\gantt!ganttunitlength,\ganttnum+0.6);
    \node [text height=1.5ex,text depth=0.7ex] at (\ganttlastx+\gantttmpa-\!!xoffset,\ganttnum+0.25) {%
-     \getvalue{v!titlefontsize} #1%
+     \getvalue{gantt!titlefontsize} #1%
    };
 
-   \ganttlastx=\dimexpr\ganttlastx+\v!ganttunitlength*#2\relax
+   \ganttlastx=\dimexpr\ganttlastx+\gantt!ganttunitlength*#2\relax
   }
 
 \def\titleelement%
@@ -165,19 +165,19 @@
 \long\def\doganttbar[#1]#2#3#4%
   {\bgroup
    \getparameters[\??gantt][#1]%
-   \edef\v!pattern{\@@ganttpattern}
-   \edef\v!color{\@@ganttcolor}
+   \edef\gantt!pattern{\@@ganttpattern}
+   \edef\gantt!color{\@@ganttcolor}
 
-   \gantttmpa=\dimexpr\v!ganttunitlength*#3\relax
-   \gantttmpb=\dimexpr\v!ganttunitlength*#4+\gantttmpa\relax
+   \gantttmpa=\dimexpr\gantt!ganttunitlength*#3\relax
+   \gantttmpb=\dimexpr\gantt!ganttunitlength*#4+\gantttmpa\relax
 
-   \doif{\v!drawledgerline}{true}{
-     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\v!ganttunitlength,\ganttnum-0.2);
+   \doif{\gantt!drawledgerline}{true}{
+     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,\ganttnum-0.2);
    }
    \node at (0,\ganttnum) [anchor=base east] {%
-     \getvalue{v!fontsize} #2%
+     \getvalue{gantt!fontsize} #2%
    };
-   \draw[pattern=\v!pattern,pattern color=\v!color] (\gantttmpa,\ganttnum+0.1) rectangle (\gantttmpb,\ganttnum+0.5);
+   \draw[pattern=\gantt!pattern,pattern color=\gantt!color] (\gantttmpa,\ganttnum+0.1) rectangle (\gantttmpb,\ganttnum+0.5);
    \global\ganttlastx=\gantttmpb
    \doglobal\decrement\ganttnum
    \egroup
@@ -190,7 +190,7 @@
 % usage: \ganttcon{startx}{starty}{endx}{endy}
 \long\def\doganttcon#1#2#3#4%
   {\bgroup
-   \draw[-latex,rounded corners=1pt] (#1*\v!ganttunitlength,-#2+0.1+0.2) -- (#1*\v!ganttunitlength+0.4*\v!ganttunitlength,-#2+0.1+0.2) -- (#1*\v!ganttunitlength+0.4*\v!ganttunitlength,-#2-0.4+0.2) -- (#1*\v!ganttunitlength-0.4*\v!ganttunitlength,-#2-0.4+0.2) -- (#1*\v!ganttunitlength-0.4*\v!ganttunitlength,-#4+0.1+0.2) -- (#3*\v!ganttunitlength,-#4+0.1+0.2);
+   \draw[-latex,rounded corners=1pt] (#1*\gantt!ganttunitlength,-#2+0.1+0.2) -- (#1*\gantt!ganttunitlength+0.4*\gantt!ganttunitlength,-#2+0.1+0.2) -- (#1*\gantt!ganttunitlength+0.4*\gantt!ganttunitlength,-#2-0.4+0.2) -- (#1*\gantt!ganttunitlength-0.4*\gantt!ganttunitlength,-#2-0.4+0.2) -- (#1*\gantt!ganttunitlength-0.4*\gantt!ganttunitlength,-#4+0.1+0.2) -- (#3*\gantt!ganttunitlength,-#4+0.1+0.2);
    \egroup
   }
 
@@ -204,14 +204,14 @@
 \long\def\doganttbarcon[#1]#2#3#4%
   {\bgroup
    \getparameters[\??gantt][#1]%
-   \edef\v!pattern{\@@ganttpattern}
-   \edef\v!color{\@@ganttcolor}
+   \edef\gantt!pattern{\@@ganttpattern}
+   \edef\gantt!color{\@@ganttcolor}
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
-   \ifdim\nextganttlastx>\dimexpr\v!ganttunitlength*#3\relax
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\v!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\v!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\v!ganttunitlength,\ganttnum+0.1+0.2);
+   \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength,\ganttnum+0.1+0.2);
    \else
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\v!ganttunitlength,\ganttnum+0.1+0.2);
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength,\ganttnum+0.1+0.2);
    \fi
 
    %hbox overfull!
@@ -226,14 +226,14 @@
 % usage: \ganttgroup{label}{start}{length}
 \long\def\doganttgroup#1#2#3%
   {\bgroup
-   \gantttmpa=\dimexpr\v!ganttunitlength*#2\relax
-   \gantttmpb=\dimexpr\v!ganttunitlength*#3+\gantttmpa\relax
+   \gantttmpa=\dimexpr\gantt!ganttunitlength*#2\relax
+   \gantttmpb=\dimexpr\gantt!ganttunitlength*#3+\gantttmpa\relax
 
-   \doif{\v!drawledgerline}{true}{
-     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\v!ganttunitlength,\ganttnum-0.2);
+   \doif{\gantt!drawledgerline}{true}{
+     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,\ganttnum-0.2);
    }
    \node at (0,\ganttnum) [anchor=base east] {%
-     \getvalue{v!fontsize}\bf #1%
+     \getvalue{gantt!fontsize}\bf #1%
    };
    \fill[black] (\gantttmpa-0.14cm,\ganttnum+0.2) rectangle (\gantttmpb+0.14cm,\ganttnum+0.4);
    \draw[diamond-diamond] (\gantttmpa-0.14cm,\ganttnum+0.2) -- (\gantttmpb+0.14cm,\ganttnum+0.2);
@@ -259,19 +259,19 @@
 \long\def\doganttmilestone[#1]#2#3%
   {\bgroup
    \getparameters[\??gantt][#1]%
-   \edef\v!color{\@@ganttcolor}
+   \edef\gantt!color{\@@ganttcolor}
 
-   \gantttmpa=\dimexpr\v!ganttunitlength*#3\relax
-   \gantttmpb=\dimexpr\v!ganttunitlength*0+\gantttmpa\relax
+   \gantttmpa=\dimexpr\gantt!ganttunitlength*#3\relax
+   \gantttmpb=\dimexpr\gantt!ganttunitlength*0+\gantttmpa\relax
 
-   \doif{\v!drawledgerline}{true}{
-     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\v!ganttunitlength,\ganttnum-0.2);
+   \doif{\gantt!drawledgerline}{true}{
+     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,\ganttnum-0.2);
    }
    \node at (0,\ganttnum) [anchor=base east] {%
-     \getvalue{v!fontsize} #2%
+     \getvalue{gantt!fontsize} #2%
    };
    \pgfonlayer{foreground}
-   \draw[diamond-, color=\v!color] (\gantttmpa,\ganttnum+0.1) -- (\gantttmpb,\ganttnum+0.4);
+   \draw[diamond-, color=\gantt!color] (\gantttmpa,\ganttnum+0.1) -- (\gantttmpb,\ganttnum+0.4);
    \endpgfonlayer
    \global\ganttlastx=\gantttmpb
    \doglobal\decrement\ganttnum
@@ -287,13 +287,13 @@
 \long\def\doganttmilestonecon[#1]#2#3%
   {\bgroup
    \getparameters[\??gantt][#1]%
-   \edef\v!color{\@@ganttcolor}
+   \edef\gantt!color{\@@ganttcolor}
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
-   \ifdim\nextganttlastx>\dimexpr\v!ganttunitlength*#3\relax
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\v!ganttunitlength-1.8,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\v!ganttunitlength-1.8,\ganttnum+0.1+0.2) -- (#3*\v!ganttunitlength-1.8,\ganttnum+0.1+0.2);
+   \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength-1.8,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength-1.8,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength-1.8,\ganttnum+0.1+0.2);
    \else
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\v!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\v!ganttunitlength-1.8,\ganttnum+0.1+0.2);
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength-1.8,\ganttnum+0.1+0.2);
    \fi
 
    \ganttmilestone[#1]{#2}{#3}
