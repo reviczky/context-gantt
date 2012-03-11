@@ -80,8 +80,8 @@
   {\getparameters[\????gantt][#1]%
    \gdef\gantt!factor{\@@@@ganttfactor}
    \gdef\gantt!ganttunitlength{\@@@@ganttxunitlength}
-   \gdef\gantt!style{\getvalue{@@ganttstyle}}
-   \gdef\gantt!titlestyle{\getvalue{@@gantttitlestyle}}
+   \gdef\gantt!style{\getvalue{@@@@ganttstyle}}
+   \gdef\gantt!titlestyle{\getvalue{@@@@gantttitlestyle}}
    \gdef\gantt!drawledgerline{\@@@@ganttdrawledgerline}
 
    \bgroup
@@ -147,7 +147,7 @@
    \startMPdrawing
      draw (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\gantt!ganttunitlength,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\gantt!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm)--(\the\ganttlastx,0.5cm-0.6cm-\the\!!row*cm)--cycle;
      path diam; diam = (\the\ganttlastx,0.5cm-\the\!!row*cm)--(\the\ganttlastx+#2*\gantt!ganttunitlength,0.5cm-0.6cm-\the\!!row*cm);
-     label (btex \getvalue{gantt!titlestyle} #1 etex, center diam);
+     label (textext("\getvalue{gantt!titlestyle}{#1}"), center diam);
    \stopMPdrawing
 
    \ganttlastx=\dimexpr\ganttlastx+\gantt!ganttunitlength*#2\relax
@@ -190,7 +190,7 @@
    }
    \startMPdrawing
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{gantt!style} #2 etex, center diag);
+     label.lft (textext("\getvalue{gantt!style}{#2}"), center diag);
      path f; f := (\the\gantttmpa,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.5cm)--(\the\gantttmpa,\ganttnum*cm+0.5cm)--cycle;
 
      hatchoptions(withcolor \gantt!color);
@@ -279,7 +279,7 @@
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{gantt!style}\bf #1 etex, center diag); 
+     label.lft (textext("\getvalue{gantt!style}{\bf #1}"), center diag); 
      fill (\the\gantttmpa-0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.4cm)--(\the\gantttmpa-0.14*cm,\ganttnum*cm+0.4cm)--cycle withcolor black;
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpa+0.01cm,\ganttnum*cm+0.2cm) withcolor black;
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb-0.01cm,\ganttnum*cm+0.2cm) withcolor black;
@@ -315,7 +315,7 @@
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
      path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (btex \getvalue{gantt!style} #2 etex, center diag);
+     label.lft (textext("\getvalue{gantt!style}{#2}"), center diag);
      fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb,\ganttnum*cm+0.3cm) withcolor \gantt!color;
    \stopMPdrawing
 
