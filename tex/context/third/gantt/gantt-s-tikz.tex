@@ -1,6 +1,6 @@
 %D \module
 %D   [     file=t-gantt-tikz,
-%D      version=2012.03.11,
+%D      version=2012.03.12,
 %D        title=\CONTEXT\ User Module,
 %D     subtitle=Drawing Gantt charts,
 %D       author=Adam Reviczky,
@@ -15,7 +15,7 @@
 \startmodule[gantt-s-tikz]
 \unprotect
 
-\def\????gantt-tikz{@@@@gantt-tikz}
+\def\??gantt-tikz{@@gantt-tikz}
 
 \usemodule[tikz,pgffor]
 \usetikzlibrary[arrows,patterns]
@@ -41,7 +41,7 @@
 
 \def\dosetupgantt[#1]%
         {\egroup
-         \getparameters[\????gantt][#1]}
+         \getparameters[\??gantt][#1]}
 
 \setupgantt
         [xunitlength=1cm,
@@ -56,7 +56,7 @@
 
 \def\dosetupganttbar[#1]%
         {\egroup
-         \getparameters[\????gantt][#1]}
+         \getparameters[\??gantt][#1]}
 
 \setupganttbar
         [pattern=north east lines,
@@ -70,13 +70,12 @@
 % fontsize - fontsize of labels (default: \tf)
 % titlefontsize - fontsize of title section (default: \tfx)
 % drawledgerline  - Switch to enable/disable the drawing of horizontal ledger lines (default value: false)
-
 \long\def\dostartgantt[#1]#2#3%
-  {\getparameters[\????gantt][#1]%
-   \gdef\gantt!ganttunitlength{\getvalue{@@@@ganttxunitlength}}
-   \gdef\gantt!fontsize{\getvalue{@@@@ganttfontsize}}
-   \gdef\gantt!titlefontsize{\getvalue{@@@@gantttitlefontsize}}
-   \gdef\gantt!drawledgerline{\@@@@ganttdrawledgerline}
+  {\getparameters[\??gantt][#1]%
+   \gdef\gantt!ganttunitlength{\getvalue{@@ganttxunitlength}}
+   \gdef\gantt!fontsize{\getvalue{@@ganttfontsize}}
+   \gdef\gantt!titlefontsize{\getvalue{@@gantttitlefontsize}}
+   \gdef\gantt!drawledgerline{\@@ganttdrawledgerline}
 
    \bgroup
    \tikzstyle{time}=[coordinate]
@@ -164,9 +163,9 @@
 % for more information see the tikz documentation
 \long\def\doganttbar[#1]#2#3#4%
   {\bgroup
-   \getparameters[\????gantt][#1]%
-   \edef\gantt!pattern{\@@@@ganttpattern}
-   \edef\gantt!color{\@@@@ganttcolor}
+   \getparameters[\??gantt][#1]%
+   \edef\gantt!pattern{\@@ganttpattern}
+   \edef\gantt!color{\@@ganttcolor}
 
    \gantttmpa=\dimexpr\gantt!ganttunitlength*#3\relax
    \gantttmpb=\dimexpr\gantt!ganttunitlength*#4+\gantttmpa\relax
@@ -203,9 +202,9 @@
 % where the optional pattern argument are the same as for \ganttbar
 \long\def\doganttbarcon[#1]#2#3#4%
   {\bgroup
-   \getparameters[\????gantt][#1]%
-   \edef\gantt!pattern{\@@@@ganttpattern}
-   \edef\gantt!color{\@@@@ganttcolor}
+   \getparameters[\??gantt][#1]%
+   \edef\gantt!pattern{\@@ganttpattern}
+   \edef\gantt!color{\@@ganttcolor}
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
    \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
@@ -258,8 +257,8 @@
 
 \long\def\doganttmilestone[#1]#2#3%
   {\bgroup
-   \getparameters[\????gantt][#1]%
-   \edef\gantt!color{\@@@@ganttcolor}
+   \getparameters[\??gantt][#1]%
+   \edef\gantt!color{\@@ganttcolor}
 
    \gantttmpa=\dimexpr\gantt!ganttunitlength*#3\relax
    \gantttmpb=\dimexpr\gantt!ganttunitlength*0+\gantttmpa\relax
@@ -286,8 +285,8 @@
 % where the optional color argument are the same as for \ganttbar and \ganttmilestone
 \long\def\doganttmilestonecon[#1]#2#3%
   {\bgroup
-   \getparameters[\????gantt][#1]%
-   \edef\gantt!color{\@@@@ganttcolor}
+   \getparameters[\??gantt][#1]%
+   \edef\gantt!color{\@@ganttcolor}
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
    \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
