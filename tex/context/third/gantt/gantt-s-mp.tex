@@ -1,6 +1,6 @@
 %D \module
 %D   [     file=t-gantt,
-%D      version=2012.03.14,
+%D      version=2012.03.15,
 %D        title=\CONTEXT\ User Module,
 %D     subtitle=Drawing Gantt charts,
 %D       author={Adam Reviczky and Aditya Mahajan},
@@ -24,7 +24,7 @@
   input hatching;
 \stopMPinclusions
 
-\newcount\ganttnum \ganttnum=0
+\newcount\ganttnum
 \newcount\gantttitlenum
 \newcount\ganttwidth
 
@@ -37,7 +37,7 @@
 \newdimen\gantttmpb
 
 % workaround for titleelement
-\def\!!row{\numexpr\ganttnum*-1\relax}
+\def\!!row{\numexpr\ganttnum-1\relax}
 
 \def\setupgantt
         {\bgroup
@@ -125,16 +125,17 @@
    \stopMPdrawing
    \MPdrawingdonetrue\getMPdrawing
    \resetMPdrawing
+   \doglobal\ganttnum=0
    }
 
 % ganttitle is the environment for drawing the title section
 \definestartstop[ganttitle][
   before={
     \ganttlastx = 0cm
+    \doglobal\advance\ganttnum by 1
   },
   after={
     \ganttlastx = 0cm
-    % \doglobal\decrement\ganttnum
   }
   ]
 
@@ -185,13 +186,13 @@
 
    \doif{\gantt!drawledgerline}{true}{
    \startMPdrawing
-     draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
+     draw (0,-\the\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,-\the\ganttnum*cm-0.2cm) dashed withdots;
    \stopMPdrawing
    }
    \startMPdrawing
-     path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
+     path diag; diag = (0,-\the\ganttnum*cm+0.1cm)--(0,-\the\ganttnum*cm+0.5cm);
      label.lft (textext("\getvalue{gantt!style}{#2}"), center diag);
-     path f; f := (\the\gantttmpa,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.1cm)--(\the\gantttmpb,\ganttnum*cm+0.5cm)--(\the\gantttmpa,\ganttnum*cm+0.5cm)--cycle;
+     path f; f := (\the\gantttmpa,-\the\ganttnum*cm+0.1cm)--(\the\gantttmpb,-\the\ganttnum*cm+0.1cm)--(\the\gantttmpb,-\the\ganttnum*cm+0.5cm)--(\the\gantttmpa,-\the\ganttnum*cm+0.5cm)--cycle;
 
      hatchoptions(withcolor \gantt!color);
      draw f withcolor black;
@@ -201,8 +202,8 @@
    \stopMPdrawing
 
    \global\ganttlastx=\gantttmpb
-   \doglobal\decrement\ganttnum
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttbar
@@ -243,7 +244,7 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,-\the\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \else
@@ -252,13 +253,14 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength,-\the\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \fi
 
    \ganttbar[#1]{#2}{#3}{#4}
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttbarcon
@@ -273,21 +275,21 @@
 
    \doif{\gantt!drawledgerline}{true}{
      \startMPdrawing
-       draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
+       draw (0,-\the\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,-\the\ganttnum*cm-0.2cm) dashed withdots;
      \stopMPdrawing
    }
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
-     path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
-     label.lft (textext("\getvalue{gantt!style}{\bf #1}"), center diag); 
-     fill (\the\gantttmpa-0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,\ganttnum*cm+0.4cm)--(\the\gantttmpa-0.14*cm,\ganttnum*cm+0.4cm)--cycle withcolor black;
-     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpa+0.01cm,\ganttnum*cm+0.2cm) withcolor black;
-     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb-0.01cm,\ganttnum*cm+0.2cm) withcolor black;
+     path diag; diag = (0,-\the\ganttnum*cm+0.1cm)--(0,-\the\ganttnum*cm+0.5cm);
+     label.lft (textext("\getvalue{gantt!style}{\bf #1}"), center diag);
+     fill (\the\gantttmpa-0.14*cm,-\the\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,-\the\ganttnum*cm+0.2cm)--(\the\gantttmpb+0.14*cm,-\the\ganttnum*cm+0.4cm)--(\the\gantttmpa-0.14*cm,-\the\ganttnum*cm+0.4cm)--cycle withcolor black;
+     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpa+0.01cm,-\the\ganttnum*cm+0.2cm) withcolor black;
+     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb-0.01cm,-\the\ganttnum*cm+0.2cm) withcolor black;
    \stopMPdrawing
 
    \global\ganttlastx=\gantttmpb
-   \doglobal\decrement\ganttnum
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttgroup
@@ -309,19 +311,19 @@
 
    \doif{\gantt!drawledgerline}{true}{
      \startMPdrawing
-       draw (0,\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,\ganttnum*cm-0.2cm) dashed withdots;
+       draw (0,-\the\ganttnum*cm-0.2cm)--(\the\ganttwidth*\gantt!ganttunitlength,-\the\ganttnum*cm-0.2cm) dashed withdots;
      \stopMPdrawing
    }
    \startMPdrawing
      pen diamond; diamond := makepen fulldiamond;
-     path diag; diag = (0,\ganttnum*cm+0.1cm)--(0,\ganttnum*cm+0.5cm);
+     path diag; diag = (0,-\the\ganttnum*cm+0.1cm)--(0,-\the\ganttnum*cm+0.5cm);
      label.lft (textext("\getvalue{gantt!style}{#2}"), center diag);
-     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb,\ganttnum*cm+0.3cm) withcolor \gantt!color;
+     fill fulldiamond scaled 0.3cm shifted (\the\gantttmpb,-\the\ganttnum*cm+0.3cm) withcolor \gantt!color;
    \stopMPdrawing
 
    \global\ganttlastx=\gantttmpb
-   \doglobal\decrement\ganttnum
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttmilestone
@@ -342,7 +344,7 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength-0.14*cm,-\the\ganttnum*cm+0.6*cm+0.2*cm)--(\the\ganttlastx-0.4*\gantt!ganttunitlength-0.14*cm,-\the\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength-0.14*cm,-\the\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \else
@@ -351,13 +353,14 @@
        interim linecap := squared;
        interim linejoin := rounded;
 
-       drawarrow (\the\ganttlastx,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength-0.14*cm,\ganttnum*cm+0.1*cm+0.2*cm);
+       drawarrow (\the\ganttlastx,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+1.1*cm+0.2*cm)--(\the\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum*cm+0.1*cm+0.2*cm)--(#3*\gantt!ganttunitlength-0.14*cm,-\the\ganttnum*cm+0.1*cm+0.2*cm);
      endgroup;
      \stopMPdrawing
    \fi
 
    \ganttmilestone[#1]{#2}{#3}
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttmilestonecon
