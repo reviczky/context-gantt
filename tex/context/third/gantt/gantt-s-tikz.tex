@@ -1,6 +1,6 @@
 %D \module
 %D   [     file=t-gantt-tikz,
-%D      version=2012.03.14,
+%D      version=2012.03.15,
 %D        title=\CONTEXT\ User Module,
 %D     subtitle=Drawing Gantt charts,
 %D       author=Adam Reviczky,
@@ -22,7 +22,7 @@
 
 \definesystemvariable{gantt}
 
-\newcount\ganttnum \ganttnum=0
+\newcount\ganttnum
 \newcount\gantttitlenum
 \newcount\ganttwidth
 
@@ -33,6 +33,9 @@
 
 \newdimen\gantttmpa
 \newdimen\gantttmpb
+
+% workaround for titleelement
+\def\!!row{\numexpr\ganttnum-1\relax}
 
 \def\setupgantt
         {\bgroup
@@ -111,16 +114,17 @@
    \dosingleempty\dostartgantt}
 
 \def\stopgantt%
-  {\stoptikzpicture}
+  {\doglobal\ganttnum=0
+   \stoptikzpicture}
 
 % ganttitle is the environment for drawing the title section
 \definestartstop[ganttitle][
   before={
     \ganttlastx = 0cm
+    \doglobal\advance\ganttnum by 1
   },
   after={
     \ganttlastx = 0cm
-    % \doglobal\decrement\ganttnum
   }
   ]
 
@@ -132,8 +136,8 @@
 
    \def\!!xoffset{1.5}
 
-   \draw (\ganttlastx,\ganttnum) rectangle (\ganttlastx+#2*\gantt!ganttunitlength,\ganttnum+0.6);
-   \node [text height=1.5ex,text depth=0.7ex] at (\ganttlastx+\gantttmpa-\!!xoffset,\ganttnum+0.25) {%
+   \draw (\ganttlastx,-\the\!!row) rectangle (\ganttlastx+#2*\gantt!ganttunitlength,-\the\!!row+0.6);
+   \node [text height=1.5ex,text depth=0.7ex] at (\ganttlastx+\gantttmpa-\!!xoffset,-\the\!!row+0.25) {%
      \getvalue{gantt!titlefontsize} #1%
    };
 
@@ -148,7 +152,7 @@
 \long\def\donumtitle#1#2#3#4%
   {\gantttitlenum=#1
    \dostepwiserecurse{#1}{#3}{#2}{
-     \titleelement{\the\gantttitlenum}{#4} 
+     \titleelement{\the\gantttitlenum}{#4}
      \advance\gantttitlenum by #2;
    }
   }
@@ -172,15 +176,15 @@
    \gantttmpb=\dimexpr\gantt!ganttunitlength*#4+\gantttmpa\relax
 
    \doif{\gantt!drawledgerline}{true}{
-     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,\ganttnum-0.2);
+     \draw[dotted] (0,-\the\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,-\the\ganttnum-0.2);
    }
-   \node at (0,\ganttnum) [anchor=base east] {%
+   \node at (0,-\the\ganttnum+0.1) [anchor=base east] {%
      \getvalue{gantt!fontsize} #2%
    };
-   \draw[pattern=\gantt!pattern,pattern color=\gantt!color] (\gantttmpa,\ganttnum+0.1) rectangle (\gantttmpb,\ganttnum+0.5);
+   \draw[pattern=\gantt!pattern,pattern color=\gantt!color] (\gantttmpa,-\the\ganttnum+0.1) rectangle (\gantttmpb,-\the\ganttnum+0.5);
    \global\ganttlastx=\gantttmpb
-   \doglobal\decrement\ganttnum
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttbar
@@ -209,14 +213,15 @@
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
    \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength,\ganttnum+0.1+0.2);
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength,-\the\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength,-\the\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength,-\the\ganttnum+0.1+0.2);
    \else
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength,\ganttnum+0.1+0.2);
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength,-\the\ganttnum+0.1+0.2);
    \fi
 
    %hbox overfull!
    \ganttbar[#1]{#2}{#3}{#4}
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttbarcon
@@ -230,17 +235,17 @@
    \gantttmpb=\dimexpr\gantt!ganttunitlength*#3+\gantttmpa\relax
 
    \doif{\gantt!drawledgerline}{true}{
-     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,\ganttnum-0.2);
+     \draw[dotted] (0,-\the\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,-\the\ganttnum-0.2);
    }
-   \node at (0,\ganttnum) [anchor=base east] {%
+   \node at (0,-\the\ganttnum+0.1) [anchor=base east] {%
      \getvalue{gantt!fontsize}\bf #1%
    };
-   \fill[black] (\gantttmpa-0.14cm,\ganttnum+0.2) rectangle (\gantttmpb+0.14cm,\ganttnum+0.4);
-   \draw[diamond-diamond] (\gantttmpa-0.14cm,\ganttnum+0.2) -- (\gantttmpb+0.14cm,\ganttnum+0.2);
+   \fill[black] (\gantttmpa-0.14cm,-\the\ganttnum+0.2) rectangle (\gantttmpb+0.14cm,-\the\ganttnum+0.4);
+   \draw[diamond-diamond] (\gantttmpa-0.14cm,-\the\ganttnum+0.2) -- (\gantttmpb+0.14cm,-\the\ganttnum+0.2);
 
    \global\ganttlastx=\gantttmpb
-   \doglobal\decrement\ganttnum
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttgroup
@@ -265,17 +270,17 @@
    \gantttmpb=\dimexpr\gantt!ganttunitlength*0+\gantttmpa\relax
 
    \doif{\gantt!drawledgerline}{true}{
-     \draw[dotted] (0,\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,\ganttnum-0.2);
+     \draw[dotted] (0,-\the\ganttnum-0.2) -- (\ganttwidth*\gantt!ganttunitlength,-\the\ganttnum-0.2);
    }
-   \node at (0,\ganttnum) [anchor=base east] {%
+   \node at (0,-\the\ganttnum) [anchor=base east] {%
      \getvalue{gantt!fontsize} #2%
    };
    \pgfonlayer{foreground}
-   \draw[diamond-, color=\gantt!color] (\gantttmpa,\ganttnum+0.1) -- (\gantttmpb,\ganttnum+0.4);
+   \draw[diamond-, color=\gantt!color] (\gantttmpa,-\the\ganttnum+0.1) -- (\gantttmpb,-\the\ganttnum+0.4);
    \endpgfonlayer
    \global\ganttlastx=\gantttmpb
-   \doglobal\decrement\ganttnum
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttmilestone
@@ -291,13 +296,14 @@
 
    \nextganttlastx = \dimexpr\ganttlastx+\ganttunitlength*1\relax
    \ifdim\nextganttlastx>\dimexpr\gantt!ganttunitlength*#3\relax
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength-1.8,\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength-1.8,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength-1.8,\ganttnum+0.1+0.2);
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength-1.8,-\the\ganttnum+0.6+0.2) -- (\ganttlastx-0.4*\gantt!ganttunitlength-1.8,-\the\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength-1.8,-\the\ganttnum+0.1+0.2);
    \else
-     \draw[-latex,rounded corners=1pt] (\ganttlastx,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength-1.8,\ganttnum+0.1+0.2);
+     \draw[-latex,rounded corners=1pt] (\ganttlastx,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+1.1+0.2) -- (\ganttlastx+0.4*\gantt!ganttunitlength,-\the\ganttnum+0.1+0.2) -- (#3*\gantt!ganttunitlength-1.8,-\the\ganttnum+0.1+0.2);
    \fi
 
    \ganttmilestone[#1]{#2}{#3}
    \egroup
+   \doglobal\advance\ganttnum by 1
   }
 
 \def\ganttmilestonecon
