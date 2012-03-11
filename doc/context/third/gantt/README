@@ -13,7 +13,7 @@ Usage
 \usemodule[gantt]
 
 \starttext
-... \startgantt ...\stopgantt ...
+… \startgantt … \stopgantt …
 \stoptext
 
 Options
