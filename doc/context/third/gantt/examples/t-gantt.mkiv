@@ -127,7 +127,7 @@
 
 \starttexdefinition install_gantt_task_handler #1#2
     %% #1 =  \definegantttask[##1[##2][alternative=#2, ##3]
-    \def#1{\doquadrupleargument\redodefinegantttask[#2]}
+    \unexpanded\def#1{\doquadrupleargument\redodefinegantttask[#2]}
 \stoptexdefinition
 
 \starttexdefinition redodefinegantttask [#1][#2][#3][#4]
@@ -141,10 +141,10 @@
 \install_gantt_task_handler \define_gantt_task      {task}
 \install_gantt_task_handler \define_gantt_milestone {milestone}
 
-\def\current_gantt_tasks{}
+\unexpanded\def\current_gantt_tasks{}
 
 \startsetups ganttchart::setups
-  \def\current_gantt_tasks{}
+  \unexpanded\def\current_gantt_tasks{}
 
   \let\task         \define_gantt_task
   \let\milestone    \define_gantt_milestone

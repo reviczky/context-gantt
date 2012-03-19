@@ -121,7 +121,7 @@
 
 \starttexdefinition initialize_gantt_chart_task #1
   \increment\gantt_task_count
-  \unexpanded\def\gantt_current_length{\namedgantttaskparameter{#1}\c!stop + \namedgantttaskparameter{#1}{float} + 1}
+  \def\gantt_current_length{\namedgantttaskparameter{#1}\c!stop + \namedgantttaskparameter{#1}{float} + 1}
   \expanded{\setupgantttask[#1][\c!n=\gantt_task_count]}
   \ifnum\gantt_chart_length<\the\numexpr\gantt_current_length\relax
         \gantt_chart_length=\the\numexpr\gantt_current_length\relax
