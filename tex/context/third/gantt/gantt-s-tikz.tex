@@ -1,6 +1,6 @@
 %D \module
 %D   [     file=t-gantt-tikz,
-%D      version=2012.03.19,
+%D      version=2012.08.19,
 %D        title=\CONTEXT\ User Module,
 %D     subtitle=Drawing Gantt charts,
 %D       author=Adam Reviczky,
@@ -37,12 +37,12 @@
 % workaround for titleelement
 \def\!!row{\numexpr\ganttnum-1\relax}
 
-\def\setupgantt
+\unexpanded\def\setupgantt
         {\bgroup
          \dosingleempty
          \dosetupgantt}
 
-\def\dosetupgantt[#1]%
+\unexpanded\def\dosetupgantt[#1]%
         {\egroup
          \getparameters[\??gantt][#1]}
 
@@ -52,12 +52,12 @@
          titlefontsize=\tfx,
          drawledgerline=false]
 
-\def\setupganttbar
+\unexpanded\def\setupganttbar
         {\bgroup
          \dosingleempty
          \dosetupganttbar}
 
-\def\dosetupganttbar[#1]%
+\unexpanded\def\dosetupganttbar[#1]%
         {\egroup
          \getparameters[\??gantt][#1]}
 
@@ -74,7 +74,7 @@
 % titlefontsize - fontsize of title section (default: \tfx)
 % drawledgerline  - Switch to enable/disable the drawing of horizontal ledger lines (default value: false)
 
-\long\def\dostartgantt[#1]#2#3%
+\unexpanded\long\def\dostartgantt[#1]#2#3%
   {\getparameters[\??gantt][#1]%
    \gdef\gantt!ganttunitlength{\getvalue{@@ganttxunitlength}}
    \gdef\gantt!fontsize{\getvalue{@@ganttfontsize}}
@@ -109,11 +109,11 @@
    \egroup
   }
 
-\def\startgantt%
+\unexpanded\def\startgantt%
   {\starttikzpicture[draw=black,yscale=.7,xscale=1]
    \dosingleempty\dostartgantt}
 
-\def\stopgantt%
+\unexpanded\def\stopgantt%
   {\doglobal\ganttnum=0
    \stoptikzpicture}
 
@@ -130,7 +130,7 @@
 
 % \titleelement draws one element of the title
 % usage: \titleelement{label}{length}
-\long\def\dotitleelement#1#2%
+\unexpanded\long\def\dotitleelement#1#2%
   {\gantttmpa=\dimexpr\gantt!ganttunitlength*#2\relax
    \divide\gantttmpa by 2;
 
@@ -144,12 +144,12 @@
    \ganttlastx=\dimexpr\ganttlastx+\gantt!ganttunitlength*#2\relax
   }
 
-\def\titleelement%
+\unexpanded\def\titleelement%
   {\dotitleelement}
 
 % \numtitle draws a numbered sequence of title elements
 % usage: \numtitle{start number}{increment}{end number}{length of each title element}
-\long\def\donumtitle#1#2#3#4%
+\unexpanded\long\def\donumtitle#1#2#3#4%
   {\gantttitlenum=#1
    \dostepwiserecurse{#1}{#3}{#2}{
      \titleelement{\the\gantttitlenum}{#4}
@@ -157,7 +157,7 @@
    }
   }
 
-\def\numtitle%
+\unexpanded\def\numtitle%
   {\donumtitle}
 
 % \ganttbar draws a single, unconnected bar for representing a task
@@ -166,7 +166,7 @@
 % pattern - is a tikz pattern (e.g. north east lines (default), north west lines, crosshatch, crosshatch dots, grid, ...)
 % color - a tikz color of the pattern (e.g. red, green blue gray, dark gray)
 % for more information see the tikz documentation
-\long\def\doganttbar[#1]#2#3#4%
+\unexpanded\long\def\doganttbar[#1]#2#3#4%
   {\bgroup
    \getparameters[\??gantt][#1]%
    \edef\gantt!pattern{\@@ganttpattern}
@@ -187,25 +187,25 @@
    \doglobal\advance\ganttnum by 1
   }
 
-\def\ganttbar
+\unexpanded\def\ganttbar
         {\dosingleempty\doganttbar}
 
 % \ganttcon draws an arrow between to bars with specified coordinates
 % usage: \ganttcon{startx}{starty}{endx}{endy}
-\long\def\doganttcon#1#2#3#4%
+\unexpanded\long\def\doganttcon#1#2#3#4%
   {\bgroup
    \draw[-latex,rounded corners=1pt] (#1*\gantt!ganttunitlength,-#2+0.1+0.2) -- (#1*\gantt!ganttunitlength+0.4*\gantt!ganttunitlength,-#2+0.1+0.2) -- (#1*\gantt!ganttunitlength+0.4*\gantt!ganttunitlength,-#2-0.4+0.2) -- (#1*\gantt!ganttunitlength-0.4*\gantt!ganttunitlength,-#2-0.4+0.2) -- (#1*\gantt!ganttunitlength-0.4*\gantt!ganttunitlength,-#4+0.1+0.2) -- (#3*\gantt!ganttunitlength,-#4+0.1+0.2);
    \egroup
   }
 
-\def\ganttcon
+\unexpanded\def\ganttcon
         {\doganttcon}
 
 % \ganttbarcon draws a single bar *and* connects the bar with the previous bar for
 % consecutive tasks
 % usage: \ganttbarcon[pattern=<pattern>,color=<color>]{label}{start}{length}
 % where the optional pattern argument are the same as for \ganttbar
-\long\def\doganttbarcon[#1]#2#3#4%
+\unexpanded\long\def\doganttbarcon[#1]#2#3#4%
   {\bgroup
    \getparameters[\??gantt][#1]%
    \edef\gantt!pattern{\@@ganttpattern}
@@ -224,12 +224,12 @@
    \doglobal\advance\ganttnum by 1
   }
 
-\def\ganttbarcon
+\unexpanded\def\ganttbarcon
         {\dosingleempty\doganttbarcon}
 
 % \ganttgroup draws a bar to group tasks
 % usage: \ganttgroup{label}{start}{length}
-\long\def\doganttgroup#1#2#3%
+\unexpanded\long\def\doganttgroup#1#2#3%
   {\bgroup
    \gantttmpa=\dimexpr\gantt!ganttunitlength*#2\relax
    \gantttmpb=\dimexpr\gantt!ganttunitlength*#3+\gantttmpa\relax
@@ -248,7 +248,7 @@
    \doglobal\advance\ganttnum by 1
   }
 
-\def\ganttgroup
+\unexpanded\def\ganttgroup
         {\doganttgroup}
 
 % \ganttmilestone, draw a diamond to represent a milestone
@@ -261,7 +261,7 @@
 \pgfdeclarelayer{foreground}
 \pgfsetlayers{background,main,foreground}
 
-\long\def\doganttmilestone[#1]#2#3%
+\unexpanded\long\def\doganttmilestone[#1]#2#3%
   {\bgroup
    \getparameters[\??gantt][#1]%
    \edef\gantt!color{\@@ganttcolor}
@@ -283,13 +283,13 @@
    \doglobal\advance\ganttnum by 1
   }
 
-\def\ganttmilestone
+\unexpanded\def\ganttmilestone
         {\dosingleempty\doganttmilestone}
 
 % \ganttmilestonecon draws a single diamond *and* connects the diamond with the previous task
 % usage: \ganttmilestonecon[color=<color>]{label}{start}
 % where the optional color argument are the same as for \ganttbar and \ganttmilestone
-\long\def\doganttmilestonecon[#1]#2#3%
+\unexpanded\long\def\doganttmilestonecon[#1]#2#3%
   {\bgroup
    \getparameters[\??gantt][#1]%
    \edef\gantt!color{\@@ganttcolor}
@@ -306,7 +306,7 @@
    \doglobal\advance\ganttnum by 1
   }
 
-\def\ganttmilestonecon
+\unexpanded\def\ganttmilestonecon
         {\dosingleempty\doganttmilestonecon}
 
 \protect \stopmodule
